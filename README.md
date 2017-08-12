@@ -11,7 +11,7 @@ You need a bit experience in JSON or general programming (so you can fill the to
 
 ## installing
 1. download the code
-2. Create a Discord Bot (tutorial: https://github.com/callFEELD/logs.tf-discord-bot/wiki)
+2. Create a Discord Bot (tutorial: https://github.com/callFEELD/logs.tf-discord-bot/wiki/Create-a-DiscordBOT) and let the bot join your server (tutorial: https://github.com/callFEELD/logs.tf-discord-bot/wiki/Let-the-Discord-Bot-join-your-server)
 3. fill the token inside the token.json file (tutorial: https://github.com/callFEELD/logs.tf-discord-bot/wiki/insert-the-token-to-the-token.json-file)
 4. get your Discord ID (enable the developer mode in discord (Settings -> Appearance; scroll down and check "Developer Mode") after that you can rightclick on your profile in a server member list and hit "copy id") and SteamID64 and fill them into the users.json file inside the moderators object. (tutorial: https://github.com/callFEELD/logs.tf-discord-bot/wiki/insert-your-Discord-ID-and-Steam-ID-into-the-users.json-file)
 5. run the script
