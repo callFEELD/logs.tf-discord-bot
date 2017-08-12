@@ -6,6 +6,7 @@ Your System (Computer/Server) needs:
 - Python 3.6 or higher
 - discord.py libary (https://github.com/Rapptz/discord.py)
 - asyncio libary
+so install them
 
 You need a bit experience in JSON or general programming (so you can fill the token and your user correctly). Trust me this ins't that hard to do.
 
