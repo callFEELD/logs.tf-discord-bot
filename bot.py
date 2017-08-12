@@ -387,8 +387,8 @@ async def on_message(message):
         if message.author.id in moderators:
             messagetosend = "`!logs user add @<name> <SteamID64>`\nto add a player to the system with his/her SteamID64. This command can also be used to update a player's SteamID64." \
                             "\n`!logs user remove @<name>`\nremoves the player from the system." \
-                            "\n\n`!logs teams create <teamname> <format>`\nCreates a new team. Format is the type of the team (6 = 6v6, 9 = Highlander, 4 = 4v4 and so on). WIP" \
-                            "\n`!logs teams delete <teamname>`\nRemoves a team from the system. WIP" \
+                            "\n\n`!logs teams create <teamname> <format>`\nCreates a new team. Format is the type of the team (6 = 6v6, 9 = Highlander, 4 = 4v4 and so on)." \
+                            "\n`!logs teams delete <teamname>`\nRemoves a team from the system." \
                             "\n\n`!logs teams add <teamname> @<name> <name>`\nStores a player with a specific name into a team." \
                             "\n`!logs teams remove <teamname> @<name>`\nRemoves a player from a team." \
                             "\n\n`version: " + version + "`"
