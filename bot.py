@@ -466,13 +466,14 @@ async def on_message(message):
 
     # COMMANDS !logs teams add
     if message.content.lower().startswith('!logs teams add'):
+        # Separates message into parts, separated by a space. Put into an array
         messagesplit = message.content.lower().split(' ')
 
+        # Is the sending user a moderator?
         if message.author.id in moderators:
             if message.content.lower() == '!logs teams add':
                 messagetosend = ":information_source: You can add or update a player to/of a team by typing `!logs teams add` <teamname> @<player> <Name>"
                 await sendMessage(message, messagetosend)
-
 
             else:
                 for team in memberlistjson["teams"]:
@@ -583,29 +584,40 @@ async def on_message(message):
 
     # COMMANDS !logs teams create
     if message.content.lower().startswith('!logs teams create'):
+        # Separates message into parts, separated by a space. Put into an array
         messagesplit = message.content.lower().split(' ')
 
+        # Is the sending user a moderator?
         if message.author.id in moderators:
+            # Check if there's no arguments, and tell the user to put arguments
             if message.content.lower() == '!logs teams create':
                 messagetosend = ":information_source: You can create a team by typing `!logs teams create` <teamname> <format>"
                 await sendMessage(message, messagetosend)
 
-
+            # Command has arguments, proceeding...
             else:
                 notexisting = False
-                for team in memberlistjson["teams"]:
-                    if messagesplit[3] in team:
-                        messagetosend = "This team already exist."
-                        notexisting = False
-                        break
+                # Checks to see if the provided team name already exists
+                if len(memberlistjson["teams"]) == 0:
+                    # No teams exist, name is original
+                    notexisting = True
+                else:
+                    # Compare provided name with all stored names
+                    for team in memberlistjson["teams"]:
+                        if messagesplit[3] in team:
+                            messagetosend = "This team already exists."
+                            notexisting = False
+                            break
+                        else:
+                            notexisting = True
 
-                    else:
-                        notexisting = True
 
                 if notexisting and len(messagesplit) >=5:
-                    # Check if last value is an int
+                    # Check if last message part is an int
                     try:
-                        fomrat = int(splitmessage[4])
+                        # Int Test
+                        format = int(splitmessage[4])
+
                         newmemberlist = open("users.json", "r").read()
                         newmemberlistjson = json.loads(newmemberlist)
                         newteam = {messagesplit[3]: [{"type": messagesplit[4]}, {"players": {}}]}
@@ -620,7 +632,7 @@ async def on_message(message):
                     except ValueError:
                         messagetosend = ":no_entry_sign: format has to be a integer (6 = 6v6, 9 = 9v9 and so on)"
 
-                elif len(messagesplit)<= 5 and notexisting:
+                elif len(messagesplit) <= 5 and notexisting:
                     messagetosend = ":information_source: You have to add the teams format (6 = 6v6, 9 = 9v9 and so on) after `!logs teams create " + \
                                     splitmessage[3] + "` <format>"
 
@@ -649,7 +661,7 @@ async def on_message(message):
                         break
 
                     else:
-                        messagetosend = "This team not exist."
+                        messagetosend = "This team does not exist."
                         notexisting = True
 
                 if not notexisting and len(messagesplit) >=4:
