@@ -388,7 +388,7 @@ class LogBotCommands:
         messagetosend = "You don't have permission."
 
         #Check if message author is a moderator
-        if self.message_author_id in self.moderators:
+        if self.message.author.id in self.moderators:
             messagetosend = "`!logs user add @<name> <SteamID64>`\nto add a player to the system with his/her SteamID64. This command can also be used to update a player's SteamID64." \
                             "\n`!logs user remove @<name>`\nremoves the player from the system." \
                             "\n\n`!logs teams create <teamname> <format>`\nCreates a new team. Format is the type of the team (6 = 6v6, 9 = Highlander, 4 = 4v4 and so on). WIP" \
@@ -413,7 +413,7 @@ class LogBotCommands:
         messagetosend = "Error"
 
         #Check if addition "match" was choosen
-        if self.message_content == '!logs match':
+        if self.message.content.lower() == '!logs match':
             messagetosend = ":information_source: You can get information from a team.\n" \
             "`!logs teams` shows you the teams that are available."
 
