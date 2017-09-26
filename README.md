@@ -5,7 +5,6 @@ A discord bot showing your recent logs, profile page and team matches. You can c
 Your System (Computer/Server) needs: 
 - Python 3.6 or higher
 - discord.py libary (https://github.com/Rapptz/discord.py)
-- asyncio libary
 
 so install them
 
@@ -13,11 +12,15 @@ so install them
 You need a bit experience in JSON or general programming (so you can fill the token and your user correctly). Trust me this ins't that hard to do.
 
 ## installing
+#easier installing:
+- install Python3 with pip
+- insert the folder into your python directory
+- and open the file: install.py
+
+#manual installing:
 1. install Python3 with pip
 
 2. go to your CMD and type "py -m pip install discord.py"
-
-2.1 type in CMD "py -m pip install asyncio"
 
 3. download this code
 
