@@ -724,6 +724,8 @@ class LogBotCommands:
                         messagetosend = ":ballot_box_with_check: " + addorupdate + " user **" + self.message.mentions[
                             0].name + "** with the SteamID64: " + addusersteamid64
 
+            return messagetosend
+
 
         # check for COMMAND: !logs user remove
         if self.message.content.lower().startswith('!logs user remove'):
@@ -746,6 +748,8 @@ class LogBotCommands:
                         # Outputs Succsessfully message
                         messagetosend = ":ballot_box_with_check: removed user " + self.message.mentions[
                             0].name
+
+            return messagetosend
 
 
     # Command: !logs
