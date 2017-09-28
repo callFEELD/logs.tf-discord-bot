@@ -53,6 +53,7 @@ def installing():
         time.sleep(0.4)
 
         os.system('pip install discord.py')
+        os.system('pip install asyncio')
 
         insertotherstuff()
 
