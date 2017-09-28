@@ -20,7 +20,7 @@ You need a bit experience in JSON or general programming (so you can fill the to
 #manual installing:
 1. install Python3 with pip
 
-2. go to your CMD and type "py -m pip install discord.py"
+2. go to your CMD and type "py -m pip install discord.py" and after that "py -m pip install asyncio"
 
 3. download this code
 
