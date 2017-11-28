@@ -6,7 +6,6 @@ Your System (Computer/Server) needs:
 - Python 3.6 or higher
 - discord.py libary (https://github.com/Rapptz/discord.py)
 
-so install them
 
 
 You need a bit experience in JSON or general programming (so you can fill the token and your user correctly). Trust me this ins't that hard to do.
@@ -14,6 +13,9 @@ You need a bit experience in JSON or general programming (so you can fill the to
 ## installing
 #easier installing:
 - install Python3 with pip
+(https://www.python.org/downloads/)
+Note For POSIX users (including Mac OS X and Linux users), the examples in this guide assume the use of a virtual environment.
+For Windows users, the examples in this guide assume that the option to adjust the system PATH environment variable was selected when installing Python.
 - insert the folder into your python directory
 - and open the file: install.py
 
