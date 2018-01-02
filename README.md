@@ -2,7 +2,7 @@
 
 A discord bot showing your recent logs, profile page and team matches. You can create teams, fill them with players and get recent matches of the teams. You can also search for other persons logs and logs.tf profile's.
 
-### ![](https://cdn1.iconfinder.com/data/icons/hawcons/32/698552-icon-40-clipboard-list-32.png)[commands](https://github.com/callFEELD/logs.tf-discord-bot/wiki/Commands)
+### ![](https://cdn1.iconfinder.com/data/icons/hawcons/32/698552-icon-40-clipboard-list-32.png)[commands](https://callfeeld.jimdo.com/logs-tf-discord-bot/commands/)
 
 ![image](https://image.jimcdn.com/app/cms/image/transf/dimension=441x10000:format=png/path/s7a796ecadbf7bd45/image/i81d0cdc47ad5fe02/version/1514911419/image.png)
 
