@@ -1,4 +1,4 @@
-# IMPORTANT: STILL WORK IN PROGRESS
+# IMPORTANT: THIS SCRIPT IS MADE FOR LINUX INSTALLATION
 # Log Bot
 # Description: A discord bot showing your recent logs, profile page and team matches. You can create teams,
 #              fill them with players and get recent matches of the teams. You can also search for other
@@ -9,7 +9,7 @@
 #          Steam:   http://steamcommunity.com/id/callFEELD/
 #          GitHub:  https://github.com/callFEELD
 # Thank you Matthew (GitHub: https://github.com/Matthew-The-Mighty-Mouse-Madge) for the support
-# last edit: 28.09.2017 (callFEELD)
+# last edit: 02.01.2018 (callFEELD)
 
 import os
 import time
@@ -51,9 +51,8 @@ def insertotherstuff():
     file = open("users.json", "w")
     file.write(json.dumps(tokenjson))
     time.sleep(0.5)
-    print("     [LogDiscordBot] There you go, everything finished. I")
-    print("                     will now start myself for the first time.")
-    os.system('bot.py')
+    print("     [LogDiscordBot] There you go, everything finished.")
+    time.sleep(1)
 
 def installing():
     print("     [LogDiscordBot] So I am asking you: Do You wanna")
@@ -65,7 +64,7 @@ def installing():
         print("                      process...")
         time.sleep(0.4)
 
-        os.system('pip install discord.py')
+        os.system('python3 -m pip install discord.py')
         os.system('pip install asyncio')
 
         insertotherstuff()
