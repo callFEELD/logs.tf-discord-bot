@@ -8,7 +8,7 @@ A discord bot showing your recent logs, profile page and team matches. You can c
 
 ### ![](https://cdn1.iconfinder.com/data/icons/hawcons/32/698436-icon-31-book-bookmark-32.png)[Wiki on GitHub](https://github.com/callFEELD/logs.tf-discord-bot/wiki)
 
-### ![](https://cdn1.iconfinder.com/data/icons/hawcons/32/698436-icon-31-book-bookmark-32.png)[Wiki on my Website (WIP)](https://callfeeld.jimdo.com/projects/logs-tf-discord-bot/)
+### ![](https://cdn1.iconfinder.com/data/icons/hawcons/32/698436-icon-31-book-bookmark-32.png)[Wiki on my Website (WIP)](https://callfeeld.jimdo.com/logs-tf-discord-bot/)
 
 ## requirements
 ### Operatring systems:
@@ -24,7 +24,7 @@ This script was tested on Linux and Windows.
 ## installing
 TIP: you can set up a raspberry pi to have a small "server" running this bot in the background
 
-### ![](https://cdn1.iconfinder.com/data/icons/logos-brands-1/24/logo_brand_brands_logos_linux-24.png)[Linux installguide](https://callfeeld.jimdo.com/projects/logs-tf-discord-bot/install-guide-linux/)
+### ![](https://cdn1.iconfinder.com/data/icons/logos-brands-1/24/logo_brand_brands_logos_linux-24.png)[Linux installguide](https://callfeeld.jimdo.com/logs-tf-discord-bot/install-guide-linux/)
 
 ### manual installing guide:
 1. install [Python3](https://www.python.org/downloads/) with pip
