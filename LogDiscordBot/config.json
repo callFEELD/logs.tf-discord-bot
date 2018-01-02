@@ -1,0 +1,12 @@
+{
+  "version": "1.2",
+
+  "username": "Log Bot",
+  "playing_status": "type !logs help",
+
+  "sixes_min_players": 5,
+  "hl_min_players": 7,
+  "fours_min_players": 3,
+  "duo_min_players": 2,
+  "amount_of_logs_searched_per_player": 25
+}
