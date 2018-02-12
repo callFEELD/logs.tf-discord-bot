@@ -33,7 +33,7 @@ TIP: you can set up a raspberry pi to have a small "server" running this bot in 
 Note For POSIX users (including Mac OS X and Linux users), the examples in this guide assume the use of a virtual environment.
 For Windows users, the examples in this guide assume that the option to adjust the system PATH environment variable was selected when installing Python.
 
-2. go to your CMD and type "python3 -m pip install discord.py" and after that "python pip install asyncio"
+2. go to your CMD and type "python3 -m pip install discord.py" and after that "python3 -m pip install asyncio"
 
 3. download this code
 
