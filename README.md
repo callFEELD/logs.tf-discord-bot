@@ -1,4 +1,4 @@
-# logs.tf discord bot (Log Bot)
+![](https://image.jimcdn.com/app/cms/image/transf/none/path/s7a796ecadbf7bd45/image/i971200078c801228/version/1518474229/image.png)
 
 A discord bot showing your recent logs, profile page and team matches. You can create teams, fill them with players and get recent matches of the teams. You can also search for other persons logs and logs.tf profile's.
 
