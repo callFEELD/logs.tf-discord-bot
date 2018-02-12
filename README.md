@@ -2,13 +2,15 @@
 
 A discord bot showing your recent logs, profile page and team matches. You can create teams, fill them with players and get recent matches of the teams. You can also search for other persons logs and logs.tf profile's.
 
-### ![](https://cdn1.iconfinder.com/data/icons/hawcons/32/698552-icon-40-clipboard-list-32.png)[commands](https://callfeeld.jimdo.com/logs-tf-discord-bot/commands/)
+[![](https://image.jimcdn.com/app/cms/image/transf/dimension=234x10000:format=png/path/s7a796ecadbf7bd45/image/i0cec09af71753cd0/version/1518475074/image.png)](https://callfeeld.jimdo.com/logs-tf-discord-bot/commands/)
 
 ![image](https://image.jimcdn.com/app/cms/image/transf/dimension=441x10000:format=png/path/s7a796ecadbf7bd45/image/i81d0cdc47ad5fe02/version/1514911419/image.png)
 
-### ![](https://cdn1.iconfinder.com/data/icons/hawcons/32/698436-icon-31-book-bookmark-32.png)[Wiki on GitHub](https://github.com/callFEELD/logs.tf-discord-bot/wiki)
+[![](https://image.jimcdn.com/app/cms/image/transf/dimension=230x10000:format=png/path/s7a796ecadbf7bd45/image/i9e494036347e1de1/version/1518475106/image.png)](https://github.com/callFEELD/logs.tf-discord-bot/wiki)
 
-### ![](https://cdn1.iconfinder.com/data/icons/hawcons/32/698436-icon-31-book-bookmark-32.png)[Wiki on my Website (WIP)](https://callfeeld.jimdo.com/logs-tf-discord-bot/)
+[![](https://image.jimcdn.com/app/cms/image/transf/dimension=225x10000:format=png/path/s7a796ecadbf7bd45/image/i49fc7bd83a4ac903/version/1518475082/image.png)](https://callfeeld.jimdo.com/logs-tf-discord-bot/)
+
+
 
 ## requirements
 ### Operatring systems:
@@ -21,10 +23,12 @@ This script was tested on Linux and Windows.
 - [Python 3.6 or higher](https://www.python.org/)
 - [discord.py libary](https://github.com/Rapptz/discord.py)
 
+
+
 ## installing
 TIP: you can set up a raspberry pi to have a small "server" running this bot in the background
 
-### ![](https://cdn1.iconfinder.com/data/icons/logos-brands-1/24/logo_brand_brands_logos_linux-24.png)[Linux installguide](https://callfeeld.jimdo.com/logs-tf-discord-bot/install-guide-linux/)
+[![](https://image.jimcdn.com/app/cms/image/transf/dimension=230x10000:format=png/path/s7a796ecadbf7bd45/image/i830d15d81ecbc750/version/1518475078/image.png)](https://callfeeld.jimdo.com/logs-tf-discord-bot/install-guide-linux/)
 
 ### manual installing guide:
 1. install [Python3](https://www.python.org/downloads/) with pip
