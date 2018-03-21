@@ -344,7 +344,7 @@ class LogBotEssentials:
         # Get the log with the most amount and the highest time
         for i in sortedlogsbytime:
             # if log is above minplayers and not higher than 9
-            if (sortedlogidsbyamount[i] >= minplayers and sortedlogidsbyamount[i] <= format):
+            if (sortedlogidsbyamount[i] >= minplayers and sortedlogidsbyamount[i] <= int(format)):
                 matchid = i
                 logtime = LogBotEssentials().totime(checklogs[matchid])
 
