@@ -85,9 +85,11 @@ class LogBotEssentials:
                 for player in data["players"]:
                     if data["players"][player]["team"] == team_of_player:
                         sum_of_heals = sum_of_heals + data["players"][player]["hr"]
-
-                heal_perc = round((int(hr)/sum_of_heals) * 100, 2)
-                heal_perc = str(heal_perc)
+                if sum_of_heals > 0:
+                    heal_perc = round((int(hr)/sum_of_heals) * 100, 2)
+                    heal_perc = str(heal_perc)
+                else:
+                    heal_perc = "0"
 
                 returnobject = {"kills": kills, "deaths": deaths, "kd": kpd, "dpm": dpm, "dt": dt, "hr": hr,
                                 "assists": assists, "kapd": kapd, "dmg": dmg, "as": airs, "heal_perc": heal_perc, \

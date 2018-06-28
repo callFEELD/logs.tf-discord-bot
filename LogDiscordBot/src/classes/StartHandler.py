@@ -4,14 +4,18 @@
 from src.classes import ErrorHandler
 from src.classes import Commands
 from src.classes import Essentials
+from src.classes import database
 
 # Importing third party libraries
 import discord                      # accessing the discord.py library
 import json                         # used to access the token.json file
 import time
+import logging
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 LBC = Commands.LogBotCommands()
 LBE = Essentials.LogBotEssentials()
+DB = database.DB()
 
 # Defining discord.py vars
 discord_client = discord.Client()
@@ -32,7 +36,7 @@ async def on_message(message):
 # also outputs the message and answer into the console
 async def sendMessage(message, messagetosend):
     await discord_client.send_typing(message.channel)
-    time.sleep(0.5)
+    time.sleep(0.3)
     await discord_client.send_message(message.channel, messagetosend)
     LBE.consoleOutput(message.author.id, message, messagetosend)
 
@@ -48,6 +52,21 @@ async def on_ready():
     # shows the 'playing' status
     await discord_client.change_presence(game=discord.Game(name=PLAYING_STATUS))
 
+    # go search if every server is in the database, if not add the server
+    for server in discord_client.servers:
+        if not DB.findServer(server.id):
+            DB.insertServer(server.id, None)
+            print("added missing server in the database: " + server.id)
+
+    print(DB.selectServers())
+
+# If the bot gets connected to a new server
+@discord_client.event
+async def on_server_join(server):
+    # save the new server to the database
+    print("new server join: " + server.id)
+    if DB.insertServer(server.id, None):
+        print("Connected to a new server: " + server.id)
 
 def run():
     global PLAYING_STATUS

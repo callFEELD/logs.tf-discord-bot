@@ -24,7 +24,7 @@ class LogBotCommands:
 
     def update(self):
         # loading users and teams of the files
-        self.teamlist = LBT.getteams()
+        self.teamlist = None
         self.userlist = LBU.getplayers()
         self.moderators = LBU.getmoderators()
 
@@ -44,7 +44,6 @@ class LogBotCommands:
             # loading users of the members list
             self.userlist = LBU.getplayers()
             self.moderators = LBU.getmoderators()
-            self.teamlist = LBT.getteams()
 
             if message.author.id in self.userlist:
                 # Steam ID64 and Steam ID3 of the author
@@ -112,23 +111,30 @@ class LogBotCommands:
     def command_help(self):
         #Variables
         modhelp = ""
+        tip = ""
 
         #If user is mod, show that command !logs modhelp exists
         if self.message.author.id in self.moderators:
            modhelp = "\nYou are a Moderator, type `!logs modhelp` to get moderator commands"
 
-        #Message that will be sended
-        messagetosend = ":information_source:  __**Commands**__" + modhelp+ \
-        "\n\n`!logs`\nshows your last played match with details about your performance" \
-        "\n`!logs profile`\nshows your logs.tf profile" \
-        "\n\n`!logs <@name>`\nshows the last log of the player you looked for" \
-        "\n`!logs <@name> profile`\nshows the logs.tf profile of the player you looked for" \
-        "\n\n`!logs match <teamname>`\nshows the latest match (scrim, lobby, official) of a team with details " \
-        "about your performance" \
-        "\n`!logs teams`\nshows the available teams" \
-        "\n`!logs teams <teamname> players`\nshows the players in the team" \
-        "\n\n`version: "+LBE.version+"`"
+        # if the user is not in the database, advice him to join
+        user = LBU.get_player(self.message.author.id)
+        if not user:
+            tip = ":incoming_envelope: "\
+                  "Seems like you are fresh meat. You can level up with `!logs addme <SteamID64>` to add yourself to "\
+                  "my database.\n\n"
 
+        #Message that will be sended
+        messagetosend = tip + ":information_source:  __**Commands**__" + modhelp+ \
+                        "\n\n`!logs`\nshows your last played match with details about your performance" \
+                        "\n`!logs profile`\nshows your logs.tf profile" \
+                        "\n\n`!logs <@name>`\nshows the last log of the player you looked for" \
+                        "\n`!logs <@name> profile`\nshows the logs.tf profile of the player you looked for" \
+                        "\n\n`!logs match <teamname>`\nshows the latest match (scrim, lobby, official) of a team with details " \
+                        "about your performance" \
+                        "\n`!logs teams`\nshows the available teams" \
+                        "\n`!logs teams <teamname> players`\nshows the players in the team" \
+                        "\n\n`version: "+LBE.version+"`"
         #sending message
         #messagetosend = str()
 
@@ -241,10 +247,11 @@ class LogBotCommands:
             messagetosend = ":busts_in_silhouette: **Teams**\n"
 
             #check if teams exists
-            if len(self.teamlist) > 0:
+            teams = LBT.get_teams(self.message.server.id)
+            if teams:
                 messagetosend = messagetosend + "Here are all teams I stored:\n"
-                for team in self.teamlist:
-                    messagetosend = messagetosend +"`"+ str(team.keys()).split("'")[1]+"`   "
+                for team in teams:
+                    messagetosend = messagetosend +"`"+ team["name"] +"`   "
             else:
                 messagetosend = messagetosend + "There aren't any teams at the moment. You can create one with the " \
                                                 "command `!logs teams create <teamname> <format>`"
@@ -386,50 +393,46 @@ class LogBotCommands:
             # COMMANDS !logs teams create
             if self.message.content.lower().startswith('!logs teams create'):
                 #vars
-                messagetosend = ":warning:  " + self.message.author.name + " you don't have permissions."
+                messagetosend = ":warning:  " + self.message.author.name + " you don't have permissions. Add yourself "\
+                                "first my database with `!logs addme <SteamID64>`"
                 messagesplit = self.message.content.lower().split(' ')
 
-                #check if author is moderator
-                if self.message.author.id in self.moderators:
+                #check if author is in system
+                user = LBU.get_player(self.message.author.id)
+                if user:
                     #if only typed: !logs teams create
                     if self.message.content.lower() == '!logs teams create':
-                        messagetosend = ":information_source:  You can create a team by typing `!logs teams create` <teamname> <format>"
+                        messagetosend = ":information_source:  You can create a team by typing "\
+                                        "`!logs teams create` <teamname> <format>"
 
-                    #check if team already exists
-                    # Checks to see if the provided team name already exists
-                    elif len(self.teamlist) == 0:
-                        # No teams exist, name is original
-                        notexisting = True
-                    else:
-                        # Compare provided name with all stored names
-                        for team in self.teamlist:
-                            if messagesplit[3] in team:
-                                messagetosend = ":warning:  This team already exists."
-                                notexisting = False
-                                break
-                            else:
-                                notexisting = True
-
-                    if 'notexisting' in locals():
-                        #if its not existing, create one
-                        if notexisting and len(messagesplit) >= 5:
+                    # check if the command is correct
+                    elif len(messagesplit) >= 5:
+                        name = messagesplit[3]
+                        type = messagesplit[4]
+                        creator = self.message.author.id
+                        # check if the teamname already exists
+                        team = LBT.get_team(self.message.server.id, name)
+                        if not team:
                             # Check if last value is an int
                             try:
-                                format = int(messagesplit[4])
-
+                                format = int(type)
                                 # create a new team (teamname, type)
-                                LBT.create_team(messagesplit[3],messagesplit[4])
+                                LBT.create_team(self.message.server.id, name, type, creator)
 
-                                messagetosend = ":ballot_box_with_check:  created team **" + messagesplit[
-                                                3] + "** with the format: " + messagesplit[4]
-
+                                messagetosend = ":ballot_box_with_check:  created team **" + name \
+                                                + "** with the format: " + type
                             except ValueError:
-                                #If type isn't a number
+                                # If type isn't a number
                                 messagetosend = ":no_entry_sign:  format has to be a integer (6 = 6v6, 9 = 9v9 and so on)"
 
-                        elif len(messagesplit) <= 5 and notexisting:
-                            messagetosend = ":information_source:  You have to add the teams format (6 = 6v6, 9 = 9v9 and so on) after `!logs teams create " + \
+                        else:
+                            messagetosend = ":warning:  This team already exists."
+
+                    elif len(messagesplit) < 5:
+                        messagetosend = ":information_source:  You have to add the teams format "\
+                                        "(6 = 6v6, 9 = 9v9 and so on) after `!logs teams create " + \
                                             messagesplit[3] + "` <format>"
+
 
 
             # COMMANDS !logs teams delete
@@ -553,15 +556,16 @@ class LogBotCommands:
                             "use the command `!logs addme <SteamID64>`"
 
             #checks if author is registerd in the user file
-            if self.message.author.id in self.userlist:
+            user = LBU.get_player(self.message.author.id)
+            if user:
                 # Then grab data of the player
                 # Get the newest log of the player
-                data = LBE.LogPlayerSearch(self.userlist[self.message.author.id], 1)
+                data = LBE.LogPlayerSearch(user["steam_id"], 1)
                 # Getting data of the log
                 logid = str(data["logs"][0]["id"]) #Logid
                 logtitle = str(data["logs"][0]["title"]) #Title of the log
                 logtime = LBE.totime(data["logs"][0]["date"]) # date and time of the log
-                steamid3 = LBE.tosteamid3(self.userlist[self.message.author.id])
+                steamid3 = LBE.tosteamid3(user["steam_id"])
 
                 #Grabbing player performance
                 logiddetails = LBE.LogIDdetails(logid, steamid3)
@@ -577,13 +581,13 @@ class LogBotCommands:
 
 
             #check if user is in userdata
-            if self.message.author.id in self.userlist:
-
+            user = LBU.get_player(self.message.author.id)
+            if user:
                 stored_data_msg = ":card_box:  __**"+ self.message.author.name +"**__\n\n**SteamID64:**  `" \
-                                  + self.userlist[self.message.author.id] + "`\n**Steam:**  <http://steamcommunity.com/profiles/"+ self.userlist[self.message.author.id] +">\n"
+                                  + user["steam_id"] + "`\n**Steam:**  <http://steamcommunity.com/profiles/"+ user["steam_id"] +">\n"
 
                 # Getting newest 3 logs
-                data = LBE.LogPlayerSearch(self.userlist[self.message.author.id], 3)
+                data = LBE.LogPlayerSearch(user["steam_id"], 3)
 
                 #check if this is a real valid user
                 if data["results"] != 0:
@@ -599,7 +603,7 @@ class LogBotCommands:
                     #building message
                     messagetosend2 = messagetosend2 + ""
                     messagetosend = stored_data_msg + "**logs.tf profile:**  <http://logs.tf/profile/" + \
-                                        self.userlist[self.message.author.id] + ">" + messagetosend2
+                                        user["steam_id"] + ">" + messagetosend2
                 else:
                     messagetosend = stored_data_msg + ":warning:  Looks like that this steamid does not exits, change it by type `!logs addme <steamid>`"
 
@@ -612,10 +616,10 @@ class LogBotCommands:
             messagetosend = "Sorry " + self.message.author.name + " :confused:  but i didn't find **" + mentionuser + "** in my data."
 
             # Checks if called player is in userdata
-            if self.message.mentions[0].id in self.userlist:
-
+            user = LBU.get_player(self.message.mentions[0].id)
+            if user:
                 # grabbing steam ids of the player
-                steamid64 = self.userlist[self.message.mentions[0].id]
+                steamid64 = user["steam_id"]
                 steamid3 = LBE.tosteamid3(steamid64)
 
                 # grabbing newst log of the player
@@ -639,18 +643,17 @@ class LogBotCommands:
             self.message.mentions[0].name) + "** in my data."
 
             #checks if mentioned player is in the user data
-            if self.message.mentions[0].id in self.userlist:
+            user = LBU.get_player(self.message.mentions[0].id)
+            if user:
                 # Grabbing steam ids and name
-                steamid64 = self.userlist[self.message.mentions[0].id]
-                steamid3 = LBE.tosteamid3(steamid64)
                 mentionuser = str(self.message.mentions[0].name)
 
                 stored_data_msg = ":credit_card:  __**" + mentionuser + "**__\n\n**SteamID64:**  `" \
-                                  + self.userlist[self.message.mentions[0].id] + "`\n**Steam:**  <http://steamcommunity.com/profiles/" + \
-                                  self.userlist[self.message.mentions[0].id] + ">\n"
+                                  + user["steam_id"] + "`\n**Steam:**  <http://steamcommunity.com/profiles/" + \
+                                  user["steam_id"] + ">\n"
 
                 # Getting newest 3 logs
-                data = LBE.LogPlayerSearch(self.userlist[self.message.mentions[0].id], 3)
+                data = LBE.LogPlayerSearch(user["steam_id"], 3)
 
                 # check if this is a real valid user
                 if data["results"] != 0:
@@ -666,7 +669,7 @@ class LogBotCommands:
                     #Building rest of the message
                     messagetosend2 = messagetosend2 + ""
                     messagetosend = stored_data_msg + "**logs.tf profile:**  <http://logs.tf/profile/" + \
-                                    self.userlist[self.message.mentions[0].id] + ">" + messagetosend2
+                                    user["steam_id"] + ">" + messagetosend2
                 else:
                     messagetosend = stored_data_msg + ":warning:  Looks like that this steamid does not exits."
 
@@ -686,7 +689,8 @@ class LogBotCommands:
 
         else:
             # check if user already exist and rewrite or add user
-            if self.message.author.id in self.userlist:
+            user = LBU.get_player(self.message.author.id)
+            if user:
                 addorupdate = "Updated"
 
             else:

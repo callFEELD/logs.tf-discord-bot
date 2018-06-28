@@ -34,6 +34,10 @@ class LogBotUsers:
         self.update()
         return self.userlist
 
+    # returns all players in a list
+    def get_player(self, discordid):
+        return self.db.findUser(discordid)
+
     def getplayers_steamid(self, discordid):
         # grabs playerlist
         playerlist = self.getplayers()
