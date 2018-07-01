@@ -75,18 +75,5 @@ class LogBotTeams:
         self.db.insertTeam(server_id, teamname, type, creator)
 
     # deletes a team
-    def delete_team(self, teamname):
-        # Updates File to be perfectly save
-        self.update()
-
-        # deletes the team
-        arrayposition = 0
-        for team in self.teamlist["teams"]:
-            if teamname in team:
-                break
-            arrayposition += 1
-
-        del self.teamlist["teams"][arrayposition]
-
-        # save the updated teamlist into the user file
-        self.save()
+    def delete_team(self, server_id, teamname):
+        self.db.deleteTeam(server_id, teamname)

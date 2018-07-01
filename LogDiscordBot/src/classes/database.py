@@ -32,7 +32,7 @@ class DB():
             print("Created table: teams...")
 
             self.c.execute('''CREATE TABLE playersinteams 
-                                (discordid INTEGER, serverid TEXT, tname INTEGER,
+                                (discordid TEXT, serverid TEXT, tname INTEGER,
                                 FOREIGN KEY(tname) REFERENCES teams(name),
                                 FOREIGN KEY(discordid) REFERENCES users(discordid),
                                 FOREIGN KEY(serverid) REFERENCES servers(serverid))''')
@@ -137,11 +137,17 @@ class DB():
         try:
             va = tuple([server_id] + [name])
             self.c.execute('SELECT name, type, creator FROM teams WHERE serverid=? AND name=?', va)
-            result = self.c.fetchall()
+            result = self.c.fetchone()
             if len(result) > 0:
-                ret = {}
-                for n, t, c in result:
-                    ret.update({"name": n, "type": t, "creator": c})
+                name, type, creator = result
+                self.c.execute('SELECT users.discordid, users.steamid FROM playersinteams INNER JOIN users \
+                               on playersinteams.discordid = users.discordid WHERE serverid=? AND tname=?', va)
+                result = self.c.fetchall()
+                players = []
+                for d, s in result:
+                    players.append({"discord_id": d, "steam_id": s})
+                ret = {"name": name, "type": type, "creator": creator, "players": players}
+                print(ret)
                 return ret
             return False
         except Exception:
@@ -152,6 +158,15 @@ class DB():
         va = tuple([name] + [server_id] + [type] + [creator_did])
         self.c.execute('INSERT INTO teams VALUES (?,?,?,?)', va)
         self.conn.commit()
+
+    def deleteTeam(self, server_id, name):
+        try:
+            va = tuple([server_id] + [name])
+            self.c.execute('DELETE FROM teams WHERE serverid=? AND name=?', va)
+            self.conn.commit()
+            return True
+        except Exception:
+            return False
 
 
     def close(self):
