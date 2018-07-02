@@ -9,7 +9,7 @@ from src.classes import database
 # Importing third party libraries
 import discord                      # accessing the discord.py library
 import json                         # used to access the token.json file
-import time
+import asyncio
 import logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
@@ -36,7 +36,7 @@ async def on_message(message):
 # also outputs the message and answer into the console
 async def sendMessage(message, messagetosend):
     await discord_client.send_typing(message.channel)
-    time.sleep(0.3)
+    await asyncio.sleep(0.15)
     await discord_client.send_message(message.channel, messagetosend)
     LBE.consoleOutput(message.author.id, message, messagetosend)
 

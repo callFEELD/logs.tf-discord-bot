@@ -150,18 +150,13 @@ class LogBotEssentials:
         checklogstitle = {}
         checklogids = []
 
-        # mention statement for the name of the user that is accessing the bot
-        mentionuserid = "<@" + str(message.author.id) + ">"
-
         # Steam ID64 and Steam ID3 of the author
-        steamid64 = Users.LogBotUsers().getplayers_steamid(message.author.id)
-        steamid3 = LogBotEssentials().tosteamid3(steamid64)
+        user = Users.LogBotUsers().get_player(message.author.id)
+        steamid3 = LogBotEssentials().tosteamid3(user["steam_id"])
 
         # Go trough all Players of the Team
-        for player in team.keys():
-            playersteamid = self.userlist[player]
-
-            data = self.LogPlayerSearch(playersteamid, str(numoflogs))
+        for player in team:
+            data = self.LogPlayerSearch(player["steam_id"], str(numoflogs))
             logids = data["logs"]
 
             for logid in logids:
@@ -169,11 +164,10 @@ class LogBotEssentials:
                 checklogstitle.update({logid["id"]: logid["title"]})
                 checklogids.append(logid["id"])
 
-
         sortedlogidsbyamount = Counter(checklogids)
-        print(sortedlogidsbyamount)
+        # print(sortedlogidsbyamount)
         sortedlogsbytime = sorted(checklogs.keys(), reverse=True)
-        print(sortedlogsbytime)
+        # print(sortedlogsbytime)
 
         # Get the log with the most amount and the highest time
         for i in sortedlogsbytime:
@@ -185,7 +179,8 @@ class LogBotEssentials:
                 logdetails = self.LogIDdetails(matchid, steamid3)
                 performance = self.PerformanceDisplay(0, logdetails)
 
-                return ":trophy: match found\n**" + str(checklogstitle[matchid]) + "**\n" + str(logtime) + "\n\n<http://logs.tf/" + str(matchid) + ">" + performance
+                return ":trophy: match found\n**" + str(checklogstitle[matchid]) + "**\n" + \
+                       str(logtime) + "\n\n<http://logs.tf/" + str(matchid) + ">" + performance
 
                 LogBotEssentials().consoleOutput(self.message.author.id, self.message, messagetosend)
                 break

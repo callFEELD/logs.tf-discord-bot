@@ -7,33 +7,11 @@ import json
 from src.classes import database
 
 class LogBotTeams:
-    # CONFIG
-    # The databse file containing the users, moderators and teams
-    teamfile = "data/users.json"
-    teamlist = open(teamfile, "r").read()
-    teamlist = json.loads(teamlist)
+    # open a database connection
     db = database.DB()
 
-    def __init__(self):
-        self.loadteams()
+    #def __init__(self):
 
-    # NOT NEEDED
-    # Loads the member list as json format and converts it into an object
-    def loadteams(self):
-        # opens file and load as json
-        self.teamlist = open(self.teamfile, "r").read()
-        self.teamlist = json.loads(self.teamlist)
-
-    # NOT NEEDED
-    # Updates(reloads) the user file
-    def update(self):
-        self.loadteams()
-
-    # NOT NEEDED
-    # saves the userlist to the users file
-    def save(self):
-        file = open(self.teamfile, "w")
-        file.write(json.dumps(self.teamlist))
 
     # returns the team with the name or False
     def get_team(self, server_id, name):
@@ -44,31 +22,18 @@ class LogBotTeams:
         return self.db.findTeams(server_id)
 
     # Adds a user to a team
-    def add_team(self, server_id, teamname, discordid, playername):
+    def add_teamroster(self, server_id, teamname, discordid, playername, class_type):
         # add user with discordid and steamid to the teamlist
-        arrayposition = 0
-        for team in self.teamlist["teams"]:
-            if teamname in team:
-                break
-            arrayposition += 1
-        self.teamlist["teams"][arrayposition][teamname][1]["players"].update({discordid: playername})
+        self.db.insertPlayerToTeam(server_id, teamname, discordid, playername, class_type)
 
+    # Updates a user in a team
+    def update_teamroster(self, server_id, teamname, discordid, playername, class_type):
+        # updates user with discordid and steamid to the teamlist
+        self.db.updatePlayerToTeam(server_id, teamname, discordid, playername, class_type)
 
     # remove a user of a team
-    def remove_team(self, teamname, discordid):
-        # Updates File to be perfectly save
-        self.update()
-
-        # remove user from a team
-        arrayposition = 0
-        for team in self.teamlist["teams"]:
-            if teamname in team:
-                break
-            arrayposition += 1
-        del self.teamlist["teams"][arrayposition][teamname][1]["players"][discordid]
-
-        # save the updated teamlist into the user file
-        self.save()
+    def remove_teamroster(self, server_id, teamname, discordid):
+        self.db.removePlayerOfTeam(server_id, teamname, discordid)
 
     # creates a team
     def create_team(self, server_id, teamname, type, creator):

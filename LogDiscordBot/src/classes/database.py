@@ -32,7 +32,7 @@ class DB():
             print("Created table: teams...")
 
             self.c.execute('''CREATE TABLE playersinteams 
-                                (discordid TEXT, serverid TEXT, tname INTEGER,
+                                (discordid TEXT, uname TEXT, class TEXT, serverid TEXT, tname INTEGER,
                                 FOREIGN KEY(tname) REFERENCES teams(name),
                                 FOREIGN KEY(discordid) REFERENCES users(discordid),
                                 FOREIGN KEY(serverid) REFERENCES servers(serverid))''')
@@ -140,12 +140,12 @@ class DB():
             result = self.c.fetchone()
             if len(result) > 0:
                 name, type, creator = result
-                self.c.execute('SELECT users.discordid, users.steamid FROM playersinteams INNER JOIN users \
+                self.c.execute('SELECT playersinteams.uname, playersinteams.class, users.discordid, users.steamid FROM playersinteams INNER JOIN users \
                                on playersinteams.discordid = users.discordid WHERE serverid=? AND tname=?', va)
                 result = self.c.fetchall()
                 players = []
-                for d, s in result:
-                    players.append({"discord_id": d, "steam_id": s})
+                for n, c, d, s in result:
+                    players.append({"name": n, "class": c, "discord_id": d, "steam_id": s})
                 ret = {"name": name, "type": type, "creator": creator, "players": players}
                 print(ret)
                 return ret
@@ -157,6 +157,21 @@ class DB():
     def insertTeam(self, server_id , name, type, creator_did):
         va = tuple([name] + [server_id] + [type] + [creator_did])
         self.c.execute('INSERT INTO teams VALUES (?,?,?,?)', va)
+        self.conn.commit()
+
+    def insertPlayerToTeam(self, server_id, teamname, discordid, playername, class_type):
+        va = tuple([discordid] + [playername] + [class_type] + [server_id] + [teamname])
+        self.c.execute('INSERT INTO playersinteams VALUES (?,?,?,?, ?)', va)
+        self.conn.commit()
+
+    def updatePlayerToTeam(self, server_id, teamname, discordid, playername, class_type):
+        va = tuple([playername] + [class_type] + [discordid] + [server_id] + [teamname])
+        self.c.execute('UPDATE playersinteams SET uname=?, class=? WHERE discordid=? and serverid=? and tname=?', va)
+        self.conn.commit()
+
+    def removePlayerOfTeam(self, server_id, teamname, discordid):
+        va = tuple([server_id] + [teamname] + [discordid])
+        self.c.execute('DELETE FROM playersinteams WHERE serverid=? AND tname=? AND discordid=?', va)
         self.conn.commit()
 
     def deleteTeam(self, server_id, name):
