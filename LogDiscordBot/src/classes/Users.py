@@ -43,12 +43,13 @@ class LogBotUsers:
         playerlist = self.getplayers()
         return playerlist[discordid]
 
-    ''' REMOVED OF THE SERVER EDITION
+
     # Adds a user
     def add_user(self, discordid, steamid):
         # add user with discordid and steamid to the userlist
         self.db.insertUser(discordid, steamid)
 
+    ''' REMOVED OF THE SERVER EDITION
     # remove a user
     def remove_user(self, discordid):
         # remove user from userlist
