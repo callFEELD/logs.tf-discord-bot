@@ -101,13 +101,9 @@ class DB():
         return ret
 
     def insertUser(self, discordid, steamid):
-        try:
-            va = tuple([discordid] + [steamid])
-            self.c.execute('INSERT INTO users VALUES (?,?, null)', va)
-            self.conn.commit()
-            return True
-        except Exception:
-            return False
+        va = tuple([discordid] + [steamid])
+        self.c.execute('INSERT INTO users VALUES (?,?, null)', va)
+        self.conn.commit()
 
     def deleteUser(self, discordid):
         try:
