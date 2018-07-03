@@ -105,6 +105,11 @@ class DB():
         self.c.execute('INSERT INTO users VALUES (?,?, null)', va)
         self.conn.commit()
 
+    def updateUser(self, discordid, steamid):
+        va = tuple([steamid] + [discordid])
+        self.c.execute('UPDATE users SET steamid=? WHERE discordid=?)', va)
+        self.conn.commit()
+
     def deleteUser(self, discordid):
         try:
             va = tuple([discordid])

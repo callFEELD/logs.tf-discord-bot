@@ -668,18 +668,21 @@ class LogBotCommands:
             # check if user already exist and rewrite or add user
             user = LBU.get_player(self.message.author.id)
             if user:
-                addorupdate = "Updated"
+                # grabs users (that has to be added) steam id 64
+                addusersteamid64 = splitmessage[2]
+
+                # adds user with discord id and steam id 64
+                LBU.update_user(self.message.author.id, addusersteamid64)
+                messagetosend = ":sparkles:\tUpdated yourself with the SteamID64: " + addusersteamid64
 
             else:
-                addorupdate = "Added"
+                # grabs users (that has to be added) steam id 64
+                addusersteamid64 = splitmessage[2]
 
-            # grabs users (that has to be added) steam id 64
-            addusersteamid64 = splitmessage[2]
+                # adds user with discord id and steam id 64
+                LBU.add_user(self.message.author.id, addusersteamid64)
 
-            # adds user with discord id and steam id 64
-            LBU.add_user(self.message.author.id, addusersteamid64)
-
-            # Outputs Successfull Message
-            messagetosend = ":sparkles:\t" + addorupdate + " yourself with the SteamID64: " + addusersteamid64
+                # Outputs Successfull Message
+                messagetosend = ":sparkles:\tAdded yourself with the SteamID64: " + addusersteamid64
 
         return messagetosend
