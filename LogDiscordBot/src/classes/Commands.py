@@ -3,7 +3,6 @@
 
 # imports
 import discord
-import random
 
 # own imports
 from src.classes import Essentials
@@ -372,19 +371,19 @@ class LogBotCommands:
         # check if the command is correct
         elif len(self.message_split) >= 5:
             name = self.message_split[3]
-            type = self.message_split[4]
+            c_type = self.message_split[4]
             creator = self.message.author.id
             # check if the teamname already exists
             team = LBT.get_team(self.message.server.id, name)
             if not team:
                 # Check if last value is an int
                 try:
-                    format = int(type)
+                    format = int(c_type)
                     # create a new team (teamname, type)
-                    LBT.create_team(self.message.server.id, name, type, creator)
+                    LBT.create_team(self.message.server.id, name, c_type, creator)
 
                     messagetosend = ":sparkles:\tSuccessfully created the team **" + name \
-                                        + "** with the format: " + type
+                                        + "** with the format: " + c_type
                 except ValueError:
                     # If type isn't a number
                     messagetosend = ":no_entry_sign:\tThe format has to be a integer (6 = 6v6, 9 = 9v9 and so on)"
@@ -426,7 +425,7 @@ class LogBotCommands:
 
         return messagetosend
 
-    ''' REMOVED OF THE SERVER EDITION
+    """ REMOVED OF THE SERVER EDITION
     def command_handler_user(self):
         if self.message.content.lower() == "!logs user":
             return self.command_user()
@@ -499,8 +498,7 @@ class LogBotCommands:
 
 
         return messagetosend
-    '''
-
+    """
 
     # Command: !logs
     def command_handler_logs(self):

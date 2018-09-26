@@ -79,7 +79,7 @@ class LogBotEssentials:
                 hr = str(data["players"][steamid3]["hr"])
                 airs = str(data["players"][steamid3]["as"])
 
-                map = str(data["info"]["map"])
+                log_map = str(data["info"]["map"])
                 medic = None
                 # med stats if he is medic
                 if played_medic:
@@ -108,7 +108,7 @@ class LogBotEssentials:
 
                 returnobject = {"kills": kills, "deaths": deaths, "kd": kpd, "dpm": dpm, "dt": dt, "hr": hr,
                                 "assists": assists, "kapd": kapd, "dmg": dmg, "as": airs, "heal_perc": heal_perc, \
-                                "classes": classes_data, "medic": medic, "map": map, "playerinlog": True}
+                                "classes": classes_data, "medic": medic, "map": log_map, "playerinlog": True}
                 return returnobject
             else:
                 returnobject = {"playerinlog": False}
@@ -151,14 +151,6 @@ class LogBotEssentials:
         #Variables
         returnvar = ""
 
-        if yourorplayer == 0:
-            title = "Your performance"
-        elif yourorplayer == 1:
-            title = "Player's performance"
-        else:
-            title = "Performance"
-
-
         # Only shows performance details if player is in the log
         if statsobject["playerinlog"]:
 
@@ -190,7 +182,7 @@ class LogBotEssentials:
         return returnvar
 
     # find the newsest team match
-    def findMatch(self, minplayers, numoflogs, format, team, message):
+    def findMatch(self, minplayers, numoflogs, game_format, team, message):
         #update the database
         self.update()
 
@@ -223,7 +215,7 @@ class LogBotEssentials:
         # Get the log with the most amount and the highest time
         for i in sortedlogsbytime:
             # if log is above minplayers and not higher than 9
-            if (sortedlogidsbyamount[i] >= minplayers and sortedlogidsbyamount[i] <= int(format)):
+            if (sortedlogidsbyamount[i] >= minplayers and sortedlogidsbyamount[i] <= int(game_format)):
                 matchid = i
                 logtime = LogBotEssentials().totime(checklogs[matchid])
 
@@ -237,11 +229,11 @@ class LogBotEssentials:
                 break
 
     # Converts the SteamID64 into a SteamID3 (as a string)
-    def tosteamid3(self, id):
-        y = int(id) - 76561197960265728
+    def tosteamid3(self, steamID64):
+        y = int(steamID64) - 76561197960265728
         x = y % 2
-        if len(id) == 17:
-            id32 = int(id[3:]) - 61197960265728
+        if len(steamID64) == 17:
+            id32 = int(steamID64[3:]) - 61197960265728
             return "[U:1:" + str(id32) + "]"
         else:
             return False

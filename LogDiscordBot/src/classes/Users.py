@@ -2,7 +2,6 @@
 # It only handles the actions for users and moderators
 
 #imports
-import json
 from src.classes import database
 
 class LogBotUsers:
