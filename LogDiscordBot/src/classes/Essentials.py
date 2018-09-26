@@ -46,8 +46,8 @@ class LogBotEssentials:
 
     #Returning Logdetails of an player from a logid
     def LogIDdetails(self, logid, steamid3):
-        #going on the Logs.tf APi and search for the logid
-        with urllib.request.urlopen("http://logs.tf/json/" + str(logid)) as url:
+        # going on the Logs.tf APi and search for the logid
+        with urllib.request.urlopen("http://logs.tf/api/v1/log/{}".format(logid)) as url:
             data = json.loads(url.read().decode())
 
             # when player is in the log output his performance
@@ -55,7 +55,10 @@ class LogBotEssentials:
 
                 # get the classes the player played and sort them after playtime
                 classes_data = {}
+                played_medic = False
                 for class_stat in data["players"][steamid3]["class_stats"]:
+                    if str(class_stat["type"]).lower() == "medic":
+                        played_medic = True
                     class_name = class_stat["type"]
                     playtime = class_stat["total_time"]
 
@@ -76,8 +79,20 @@ class LogBotEssentials:
                 hr = str(data["players"][steamid3]["hr"])
                 airs = str(data["players"][steamid3]["as"])
 
-                #med stats if he is medic
-                #wip
+                map = str(data["info"]["map"])
+                medic = None
+                # med stats if he is medic
+                if played_medic:
+                    ubers = str(data["players"][steamid3]["ubers"])
+                    drops = str(data["players"][steamid3]["drops"])
+                    uber_types = ""
+                    k = 0
+                    for uber in data["players"][steamid3]["ubertypes"]:
+                        uber_types = uber_types + list(data["players"][steamid3]["ubertypes"].keys())[k] + ": " + str(list(data["players"][steamid3]["ubertypes"].values())[k]) + "\t"
+                        k += 1
+                    hpm = str(round(float(data["players"][steamid3]["heal"]) / (float(data["info"]["total_length"])/60), 2))
+                    medic = {"hpm": hpm, "ubers": ubers, "drops": drops, "uber_types": uber_types}
+                    print(data["players"][steamid3])
 
                 #get heals percentage
                 team_of_player = str(data["players"][steamid3]["team"]) #get players team
@@ -93,22 +108,45 @@ class LogBotEssentials:
 
                 returnobject = {"kills": kills, "deaths": deaths, "kd": kpd, "dpm": dpm, "dt": dt, "hr": hr,
                                 "assists": assists, "kapd": kapd, "dmg": dmg, "as": airs, "heal_perc": heal_perc, \
-                                "classes": classes_data, "playerinlog": True}
+                                "classes": classes_data, "medic": medic, "map": map, "playerinlog": True}
                 return returnobject
             else:
                 returnobject = {"playerinlog": False}
                 return returnobject
 
-
-    #Retruns a Player Log.tf search, by inputting steamid64 and a log limit
+    # Returns a Player Log.tf search, by inputting steamid64 and a log limit
     def LogPlayerSearch(self, steamid64, limit):
         # going on the Logs.tf APi and search for the player with a limit
-        with urllib.request.urlopen("http://logs.tf/json_search?player=" + steamid64 + "&limit=" + str(limit)) as url:
+        with urllib.request.urlopen("http://logs.tf/api/v1/log?player=" + steamid64 + "&limit=" + str(limit)) as url:
             data = json.loads(url.read().decode())
         return data
 
+    # Returns a Player Demos.tf search, by inputting steamid64
+    def DemoPlayerSearch(self, steamid64):
+        # going on the Logs.tf APi and search for the player with a limit
+        with urllib.request.urlopen(
+                "https://api.demos.tf/profiles/" + str(steamid64)) as url:
+            data = json.loads(url.read().decode())
+        return data
 
-    #Returns String with performance details
+    def get_closest_demo(self, steam_id64, logs_unix_timestamp):
+        demos = self.DemoPlayerSearch(steam_id64)
+        diffs = []
+        ids = []
+        for demo in demos:
+            diff = float(demo["time"]) - float(logs_unix_timestamp)
+            if 0 < diff >= 60:
+                diffs.append(diff)
+                ids.append(demo["id"])
+
+        if len(diffs) > 0:
+            min_diff = min(diffs)
+            index = diffs.index(min_diff)
+            return "https://demos.tf/" + str(ids[index])
+        else:
+            return None
+
+    # Returns String with performance details
     def PerformanceDisplay(self, yourorplayer, statsobject):
         #Variables
         returnvar = ""
@@ -121,24 +159,37 @@ class LogBotEssentials:
             title = "Performance"
 
 
-        #Only shows performance details if plaer is in the log
+        # Only shows performance details if player is in the log
         if statsobject["playerinlog"]:
 
             # show played classes (sorted after playtime)
             played_classes_msg = ""
-            for played_class in statsobject["classes"].keys():
-                played_classes_msg = played_classes_msg + str(played_class) + "  "
+            classes_amount = len(list(statsobject["classes"].keys()))
+            k = 0
+            if classes_amount != 1:
+                for played_class in statsobject["classes"].keys():
+                    k += 1
+                    if k >= classes_amount:
+                        played_classes_msg = played_classes_msg + str(played_class)
+                    else:
+                        played_classes_msg = played_classes_msg + str(played_class) + ", "
+            else:
+                played_classes_msg = list(statsobject["classes"].keys())[0]
 
-            returnvar = "```classes played: " +played_classes_msg + "\n\n"\
-                        "kills: " + statsobject["kills"] + ",   deaths: " + statsobject["deaths"] + ",   assists: " + statsobject["assists"] +"\n\n" \
+            returnvar = "*map*\t\t\t\t" + statsobject["map"] + "\n*class(es)*\t   " + played_classes_msg + "\n" \
+                        "```kills: " + statsobject["kills"] + ",   assists: " + statsobject["assists"] + ",   deaths: " + statsobject["deaths"] + "\n\n" \
                         "k/d: " + statsobject["kd"] + ",   ka/d: " + statsobject["kapd"] + "\n\n" \
                         "dpm: " + statsobject["dpm"] + ",   dmg: " + statsobject["dmg"] + "\n\n" \
                         "heals: " + statsobject["heal_perc"] + "%,   as: " + statsobject["as"] + "```"
+
+            if statsobject["medic"] is not None:
+                med = statsobject["medic"]
+                returnvar += "```ubers: " + med["ubers"] + "\tdrops: " + med["drops"] + "\n\n" \
+                             "heals/min: " + med["hpm"] + "\n\n" + med["uber_types"] + "```"
         #Returning
         return returnvar
 
-
-    #find the newsest team match
+    # find the newsest team match
     def findMatch(self, minplayers, numoflogs, format, team, message):
         #update the database
         self.update()
@@ -185,7 +236,6 @@ class LogBotEssentials:
                 LogBotEssentials().consoleOutput(self.message.author.id, self.message, messagetosend)
                 break
 
-
     # Converts the SteamID64 into a SteamID3 (as a string)
     def tosteamid3(self, id):
         y = int(id) - 76561197960265728
@@ -196,11 +246,9 @@ class LogBotEssentials:
         else:
             return False
 
-
     # Makes a timestamp better readable
     def totime(self, timestamp):
-        return str(datetime.datetime.fromtimestamp(int(str(timestamp))).strftime('%d-%m-%Y %H:%M:%S'))
-
+        return str(datetime.datetime.fromtimestamp(int(str(timestamp))).strftime('%d-%m-%Y %H:%M:%S %z'))
 
     # Console output of the users id that was accessing the bot and the bots output
     def consoleOutput(self, userid, message, outputmessage):

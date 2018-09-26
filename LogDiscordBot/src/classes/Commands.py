@@ -3,6 +3,7 @@
 
 # imports
 import discord
+import random
 
 # own imports
 from src.classes import Essentials
@@ -13,22 +14,28 @@ LBU = Users.LogBotUsers()
 LBE = Essentials.LogBotEssentials()
 LBT = Teams.LogBotTeams()
 
+
 class LogBotCommands:
     message = {}
     moderators = LBU.getmoderators()
     client = discord.Client()
 
+    sentences = {"good": ["Damn impressive logs from", "Look at those fancy logs from",
+                          "Impressive play from", "Legendary game from",
+                          "Holy shit, look at those logs from"],
+                 "okay": ["Here is the log from", "GG to", "There you go the logs from",
+                          "There is the game of"]}
 
     def scan(self, message):
         # load the users data if a message hits and contains LDB commands
-        if (message.content.lower().startswith("!logs")):
+        if message.content.lower().startswith("!logs"):
 
             # Grab important informations of message
             self.message = message
             self.message_split = self.message.content.lower().split(' ')
             msg = None
 
-            #Checking message after all available commands
+            # Checking message after all available commands
             # COMMAND: !logs help
             if message.content.lower() == "!logs help":
                 msg = self.command_help()
@@ -52,7 +59,7 @@ class LogBotCommands:
             # COMMAND: !logs user
             elif message.content.lower().startswith('!logs user'):
                 msg = "This command is no longer supported on the Server Edition."
-                    #self.command_handler_user()
+                    # self.command_handler_user()
 
             # COMMAND: !logs addme
             elif message.content.lower().startswith('!logs addme'):
@@ -69,8 +76,6 @@ class LogBotCommands:
             if msg is None:
                 return self.command_not_found()
             return msg
-
-
 
     # Command not found error
     def command_not_found(self):
@@ -105,7 +110,6 @@ class LogBotCommands:
 
         return messagetosend
 
-
     # COMMAND: !logs modhelp
     def command_modhelp(self):
         messagetosend = "__**Advanced commands**__" \
@@ -119,12 +123,10 @@ class LogBotCommands:
 
         return messagetosend
 
-
     # COMMAND: !logs version
     def command_version(self):
         messagetosend = "`" + LBE.version + "`"
         return messagetosend
-
 
     # COMMAND: !logs match
     def command_match(self):
@@ -185,7 +187,6 @@ class LogBotCommands:
 
         # Output
         return messagetosend
-
 
     # handles the various !logs teams ... commands
     def command_handler_teams(self):
@@ -521,30 +522,44 @@ class LogBotCommands:
 
     def command_logs(self):
         # initilaize vars
-        messagetosend = "Sorry " + self.message.author.name + \
-                        " :confused:  but I didn't find you in my data.\n" \
-                        "But you can add yourself to the system by adding your Steam ID 64.\n" \
-                        "use the command `!logs addme <SteamID64>`"
+        messagetosend = ":wave: Hey **{}** seems like you are new.\n" \
+                        "With your Steam information I can offer you details such as your current logs.\n" \
+                        "You can create teams, fill them with players and get recent matches of the teams.\n" \
+                        "You can also search for other persons logs and logs.tf profile's.\n\n" \
+                        "In two steps you can use them:\n" \
+                        "\t\t\t1. Go to <https://steamid.xyz/> and find your *SteamID64*\n" \
+                        "\t\t\t2. write `!logs addme ` and then your SteamID64. Example:`!logs addme 76561198041007223`" \
+                        "".format(self.message.author.name)
 
         # checks if author is registerd in the user file
         user = LBU.get_player(self.message.author.id)
         if user:
             # Then grab data of the player
             # Get the newest log of the player
+            demo_link = ""
             data = LBE.LogPlayerSearch(user["steam_id"], 1)
             # Getting data of the log
-            logid = str(data["logs"][0]["id"])  # Logid
-            logtitle = str(data["logs"][0]["title"])  # Title of the log
-            logtime = LBE.totime(data["logs"][0]["date"])  # date and time of the log
-            steamid3 = LBE.tosteamid3(user["steam_id"])
+            if len(data["logs"]) > 0:
+                logid = str(data["logs"][0]["id"])  # Logid
+                logtitle = str(data["logs"][0]["title"])  # Title of the log
+                logtime = LBE.totime(data["logs"][0]["date"])  # date and time of the log
+                steamid3 = LBE.tosteamid3(user["steam_id"])
 
-            # Grabbing player performance
-            logiddetails = LBE.LogIDdetails(logid, steamid3)
-            performance = LBE.PerformanceDisplay(0, logiddetails)
+                # Grabbing player performance
+                logiddetails = LBE.LogIDdetails(logid, steamid3)
+                demo = LBE.get_closest_demo(user["steam_id"], data["logs"][0]["date"])
+                performance = LBE.PerformanceDisplay(0, logiddetails)
 
-            # Message content
-            messagetosend = ":dart:\t" + self.message.author.name + "'s Log found\n\n**" + logtitle + "**\t`" \
-                             + logtime + "`\n<http://logs.tf/" + logid + ">\n" + performance
+                if demo is not None:
+                    demo_link = "\t\tdemo [<{}>]".format(demo)
+
+                # Message content
+                messagetosend = ":dart:\t" + self.message.author.name + "'s played the match:\n\t\t   " + logtitle + \
+                                "\t`" + logtime + "`\n\n" + performance + \
+                                "log [<http://logs.tf/" + logid + ">]" + demo_link + "\n\n"
+            else:
+                messagetosend = ":warning:\tLooks like there a no logs.\n\t\t   Maybe this steamid does not exits, " \
+                                "it can be changed by typing `!logs addme <steamid>`"
 
         return messagetosend
 
@@ -555,11 +570,12 @@ class LogBotCommands:
         # check if user is in userdata
         user = LBU.get_player(self.message.author.id)
         if user:
-            stored_data_msg = ":card_box:\t**" + self.message.author.name + "'s profile**\n\nSteamID\t\t\t`" \
-                              + user["steam_id"] + "`\nSteam:\t\t\t\t<http://steamcommunity.com/profiles/" + user[
-                                  "steam_id"] + ">\n"
-
-            # Getting newest 3 logs
+            stored_data_msg = ":card_box:\t**" + self.message.author.name + "'s profile**\n\n" \
+                              "*logs.tf*\t\t\t\t[<http://logs.tf/profile/" + user["steam_id"] + ">]\n" \
+                              "*demos.tf*\t\t   [<http://demos.tf/profiles/" + user["steam_id"] + ">]\n" \
+                              "*steam*\t\t\t\t[<http://steamcommunity.com/profiles/" + user["steam_id"] + ">]\n" \
+                              "*SteamID64*\t  `" + user["steam_id"] + "`\n"
+                # Getting newest 3 logs
             data = LBE.LogPlayerSearch(user["steam_id"], 3)
 
             # check if this is a real valid user
@@ -576,11 +592,10 @@ class LogBotCommands:
 
                 # building message
                 messagetosend2 = messagetosend2 + ""
-                messagetosend = stored_data_msg + "logs.tf profile:\t<http://logs.tf/profile/" + \
-                                user["steam_id"] + ">" + messagetosend2
+                messagetosend = stored_data_msg + messagetosend2
             else:
-                messagetosend = stored_data_msg + ":warning:  Looks like that this steamid does not exits, \
-                                change it by type `!logs addme <steamid>`"
+                messagetosend = stored_data_msg + "\n\n:warning:\tLooks like there a no logs.\n\t\t   Maybe this steamid does not exits, " \
+                                "it can be changed by typing `!logs addme <steamid>`"
 
         return messagetosend
 
@@ -596,20 +611,30 @@ class LogBotCommands:
             # grabbing steam ids of the player
             steamid64 = user["steam_id"]
             steamid3 = LBE.tosteamid3(steamid64)
+            demo_link = ""
 
             # grabbing newst log of the player
             data = LBE.LogPlayerSearch(user["steam_id"], 1)
             # Getting log details
-            logid = str(data["logs"][0]["id"])  # logid
-            logtitle = str(data["logs"][0]["title"])  # log title
-            logtime = LBE.totime(data["logs"][0]["date"])  # date and time of the log
-            # getting player performance
-            logiddetails = LBE.LogIDdetails(logid, steamid3)
-            performance = LBE.PerformanceDisplay(1, logiddetails)
+            if len(data["logs"]) > 0:
+                logid = str(data["logs"][0]["id"])  # logid
+                logtitle = str(data["logs"][0]["title"])  # log title
+                logtime = LBE.totime(data["logs"][0]["date"])  # date and time of the log
+                # getting player performance
+                demo = LBE.get_closest_demo(user["steam_id"], data["logs"][0]["date"])
+                logiddetails = LBE.LogIDdetails(logid, steamid3)
+                performance = LBE.PerformanceDisplay(1, logiddetails)
 
-            # Message content
-            messagetosend = ":mag_right:\t**" + mentionuser + "**'s Log found\n\n**" + logtitle\
-                            + "**\t`" + logtime + "`\n<http://logs.tf/" + logid + ">" + performance
+                if demo is not None:
+                    demo_link = "\t\tdemo [<{}>]".format(demo)
+
+                # Message content
+                messagetosend = ":mag_right:\t" + mentionuser + "'s played the match:\n\t\t   " + logtitle + \
+                                "\t`" + logtime + "`\n\n" + performance + \
+                                "log [<http://logs.tf/" + logid + ">]" + demo_link + "\n\n"
+            else:
+                messagetosend = ":warning:\tLooks like there a no logs.\n\t\t   Maybe this steamid does not exits, " \
+                                "it can be changed by letting the user typing `!logs addme <steamid>`"
 
         return messagetosend
 
@@ -624,9 +649,11 @@ class LogBotCommands:
             # Grabbing steam ids and name
             mentionuser = str(self.message.mentions[0].name)
 
-            stored_data_msg = ":credit_card:\t This is **" + mentionuser + " profile**\n\nSteamID:\t\t\t`" \
-                              + user["steam_id"] + "`\nSteam:\t\t\t\t<http://steamcommunity.com/profiles/" + \
-                              user["steam_id"] + ">\n"
+            stored_data_msg = ":credit_card:\t This is **" + mentionuser + "'s profile**\n\n" \
+                              "*logs.tf*\t\t\t\t[<http://logs.tf/profile/" + user["steam_id"] + ">]\n" \
+                              "*demos.tf*\t\t   [<http://demos.tf/profiles/" + user["steam_id"] + ">]\n" \
+                              "*steam*\t\t\t\t[<http://steamcommunity.com/profiles/" + user["steam_id"] + ">]\n" \
+                              "*SteamID64*\t  `" + user["steam_id"] + "`\n"
 
             # Getting newest 3 logs
             data = LBE.LogPlayerSearch(user["steam_id"], 3)
@@ -634,7 +661,7 @@ class LogBotCommands:
             # check if this is a real valid user
             if data["results"] != 0:
                 # Building message
-                messagetosend2 = "\n\n__Last 3 logs__\n"
+                messagetosend2 = "\n__Last 3 logs__\n"
                 # inserting logs with link, title, date and time
                 for log in data["logs"]:
                     logid = str(log["id"])
@@ -645,10 +672,10 @@ class LogBotCommands:
 
                 # Building rest of the message
                 messagetosend2 = messagetosend2 + ""
-                messagetosend = stored_data_msg + "logs.tf profile:\t<http://logs.tf/profile/" + \
-                                user["steam_id"] + ">" + messagetosend2
+                messagetosend = stored_data_msg + messagetosend2
             else:
-                messagetosend = stored_data_msg + ":warning:  Looks like that this steamid does not exits."
+                messagetosend = stored_data_msg +"\n\n:warning:\tLooks like there a no logs.\n\t\t   Maybe this steamid does not exits, " \
+                                "it can be changed by letting the user typing `!logs addme <steamid>`"
 
         return messagetosend
 
