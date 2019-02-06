@@ -1,12 +1,12 @@
-![](https://image.jimcdn.com/app/cms/image/transf/none/path/s7a796ecadbf7bd45/image/i971200078c801228/version/1518474229/image.png)
+![Logs.tf Discord Bot](https://image.jimcdn.com/app/cms/image/transf/none/path/s7a796ecadbf7bd45/image/i971200078c801228/version/1518474229/image.png)
 
 A discord bot showing your recent logs, profile page and team matches based on the website http://logs.tf. You can create teams, fill them with players and get recent matches of the teams. You can also search for other persons logs and logs.tf profile's.
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/7bdca2c5c8ae4568924f7d0814364ffa)](https://app.codacy.com/app/callfeeld/logs.tf-discord-bot?utm_source=github.com&utm_medium=referral&utm_content=callFEELD/logs.tf-discord-bot&utm_campaign=Badge_Grade_Dashboard)
 
 
-[![](https://image.jimcdn.com/app/cms/image/transf/dimension=234x10000:format=png/path/s7a796ecadbf7bd45/image/i0cec09af71753cd0/version/1518475074/image.png)](https://github.com/callFEELD/logs.tf-discord-bot/blob/master/docs/Commands.md)
-[![](https://image.jimcdn.com/app/cms/image/transf/dimension=230x10000:format=png/path/s7a796ecadbf7bd45/image/i9e494036347e1de1/version/1518475106/image.png)](https://github.com/callFEELD/logs.tf-discord-bot/wiki)
+[![Commands](https://image.jimcdn.com/app/cms/image/transf/dimension=234x10000:format=png/path/s7a796ecadbf7bd45/image/i0cec09af71753cd0/version/1518475074/image.png)](https://github.com/callFEELD/logs.tf-discord-bot/blob/master/docs/Commands.md)
+[![Wiki](https://image.jimcdn.com/app/cms/image/transf/dimension=230x10000:format=png/path/s7a796ecadbf7bd45/image/i9e494036347e1de1/version/1518475106/image.png)](https://github.com/callFEELD/logs.tf-discord-bot/wiki)
 
 
 
