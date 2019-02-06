@@ -60,7 +60,14 @@ docker run -d --name logdiscordbot -v LogDiscordBot:/logdiscordbot/data logdisco
 ```
 A good addition for this command is to automatically let the docker container restart on close:
 ```bash
-docker start --restart always -d --name logdiscordbot -v LogDiscordBot:/logdiscordbot/data logdiscordbot
+docker run --restart always -d --name logdiscordbot -v LogDiscordBot:/logdiscordbot/data logdiscordbot
+```
+You can start and stop the bot with:
+```bash
+docker start logdiscordbot
+```
+```bash
+docker stop logdiscordbot
 ```
 
 TIP: you can set up a raspberry pi to have a small "server" running this bot in the background
