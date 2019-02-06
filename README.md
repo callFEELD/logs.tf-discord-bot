@@ -2,6 +2,12 @@
 
 A discord bot showing your recent logs, profile page and team matches based on the website http://logs.tf. You can create teams, fill them with players and get recent matches of the teams. You can also search for other persons logs and logs.tf profile's.
 
+[![](https://image.jimcdn.com/app/cms/image/transf/dimension=234x10000:format=png/path/s7a796ecadbf7bd45/image/i0cec09af71753cd0/version/1518475074/image.png)](https://callfeeld.jimdo.com/logs-tf-discord-bot/commands/)
+[![](https://image.jimcdn.com/app/cms/image/transf/dimension=230x10000:format=png/path/s7a796ecadbf7bd45/image/i9e494036347e1de1/version/1518475106/image.png)](https://github.com/callFEELD/logs.tf-discord-bot/wiki)
+[![](https://image.jimcdn.com/app/cms/image/transf/dimension=225x10000:format=png/path/s7a796ecadbf7bd45/image/i49fc7bd83a4ac903/version/1518475082/image.png)](https://callfeeld.jimdo.com/logs-tf-discord-bot/)
+
+
+
 Don't want to have a hard time installing?
 
 ![](https://image.jimcdn.com/app/cms/image/transf/dimension=500x10000:format=png/path/s7a796ecadbf7bd45/image/i26e3855a94297c9f/version/1530651637/image.png)
@@ -10,27 +16,22 @@ comming soon...
 
 An official bot is under development right now. If you want to take part of beta [contact me](https://steamcommunity.com/id/callFEELD). During the beta phase be warned that the bot could be offline for troubleshooting for a few minutes. Also data can be lost during processes.
 
-[![](https://image.jimcdn.com/app/cms/image/transf/dimension=234x10000:format=png/path/s7a796ecadbf7bd45/image/i0cec09af71753cd0/version/1518475074/image.png)](https://callfeeld.jimdo.com/logs-tf-discord-bot/commands/)
-[![](https://image.jimcdn.com/app/cms/image/transf/dimension=230x10000:format=png/path/s7a796ecadbf7bd45/image/i9e494036347e1de1/version/1518475106/image.png)](https://github.com/callFEELD/logs.tf-discord-bot/wiki)
-[![](https://image.jimcdn.com/app/cms/image/transf/dimension=225x10000:format=png/path/s7a796ecadbf7bd45/image/i49fc7bd83a4ac903/version/1518475082/image.png)](https://callfeeld.jimdo.com/logs-tf-discord-bot/)
 
-![image](https://image.jimcdn.com/app/cms/image/transf/dimension=441x10000:format=png/path/s7a796ecadbf7bd45/image/i81d0cdc47ad5fe02/version/1514911419/image.png)
+## Install instructions
+You can set up a raspberry pi to have a small "server" running this bot in the background. Here are various types how you can install the discord bot.
 
-
-## requirements
-### Operatring systems:
 ![](https://cdn1.iconfinder.com/data/icons/logos-brands-1/24/logo_brand_brands_logos_microsoft_windows-48.png)
-or
-![](https://cdn1.iconfinder.com/data/icons/logos-brands-1/24/logo_brand_brands_logos_linux-48.png)
+and 
+![](https://cdn1.iconfinder.com/data/icons/logos-brands-1/24/logo_brand_brands_logos_linux-48.png) were successfully tested.
 
-This script was tested on Linux and Windows.
-### programs
+dependencies:
 - [Python 3.6 or higher](https://www.python.org/)
 - [discord.py libary](https://github.com/Rapptz/discord.py)
 
 
+### Linux
+[![](https://image.jimcdn.com/app/cms/image/transf/dimension=230x10000:format=png/path/s7a796ecadbf7bd45/image/i830d15d81ecbc750/version/1518475078/image.png)](https://callfeeld.jimdo.com/logs-tf-discord-bot/install-guide-linux/)
 
-## installing
 
 ### Docker
 First download the git repository
@@ -70,11 +71,7 @@ docker start logdiscordbot
 docker stop logdiscordbot
 ```
 
-TIP: you can set up a raspberry pi to have a small "server" running this bot in the background
-
-[![](https://image.jimcdn.com/app/cms/image/transf/dimension=230x10000:format=png/path/s7a796ecadbf7bd45/image/i830d15d81ecbc750/version/1518475078/image.png)](https://callfeeld.jimdo.com/logs-tf-discord-bot/install-guide-linux/)
-
-### manual installing guide:
+### Manual install
 1. install [Python3](https://www.python.org/downloads/) with pip
 
 Note For POSIX users (including Mac OS X and Linux users), the examples in this guide assume the use of a virtual environment.
