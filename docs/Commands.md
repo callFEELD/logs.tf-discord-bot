@@ -30,7 +30,7 @@ These commands are for the current version `1.3 -dev Server Edition`
 - `!logs addme <SteamID64>` adds your self to the bot with your steamid
 
 
-##Team management commands
+## Team management commands
 
 - `!logs teams create <teamname> <format>` Creates a new team. Format is the type of the team (6 = 6v6, 9 = Highlander, 4 = 4v4 and so on).
 
