@@ -22,11 +22,11 @@ An official bot is under development right now. If you want to take part of beta
 ## Install instructions
 You can set up a raspberry pi to have a small "server" running this bot in the background. Here are various types how you can install the discord bot.
 
-![](https://cdn1.iconfinder.com/data/icons/logos-brands-1/24/logo_brand_brands_logos_microsoft_windows-48.png)
+![](https://cdn1.iconfinder.com/data/icons/logos-brands-1/24/logo_brand_brands_logos_microsoft_windows-24.png)
 and 
-![](https://cdn1.iconfinder.com/data/icons/logos-brands-1/24/logo_brand_brands_logos_linux-48.png) were successfully tested.
+![](https://cdn1.iconfinder.com/data/icons/logos-brands-1/24/logo_brand_brands_logos_linux-24.png) were successfully tested.
 
-dependencies:
+### Dependencies
 - [Python 3.6 or higher](https://www.python.org/)
 - [discord.py libary](https://github.com/Rapptz/discord.py)
 
