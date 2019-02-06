@@ -31,6 +31,39 @@ This script was tested on Linux and Windows.
 
 
 ## installing
+
+### Docker
+First download the git repository
+```bash
+git clone https://github.com/callFEELD/logs.tf-discord-bot
+```
+
+
+Next hop into the folder `logs.tf-discord-bot/LogDiscordBot/data/cfg/` and add your discord bot token
+```bash
+cd logs.tf-discord-bot/
+nano LogDiscordBot/data/cfg/token.json
+```
+
+
+Then create a docker volume to access the database for backup purposes
+```bash
+docker volume create LogDiscordBot
+```
+
+
+After that you can build the docker iamge
+```bash
+docker build . -t logdiscordbot
+```
+
+Now you can run the bot. In this run command we connect our created Docker Volume `LogDiscordBot` with the location of the database and the config in the Docker Container `/logdiscordbot/data`
+```bash
+docker run -d --name logdiscordbot -v LogDiscordBot:/logdiscordbot/data logdiscordbot
+```
+
+
+
 TIP: you can set up a raspberry pi to have a small "server" running this bot in the background
 
 [![](https://image.jimcdn.com/app/cms/image/transf/dimension=230x10000:format=png/path/s7a796ecadbf7bd45/image/i830d15d81ecbc750/version/1518475078/image.png)](https://callfeeld.jimdo.com/logs-tf-discord-bot/install-guide-linux/)
