@@ -2,6 +2,9 @@
 
 A discord bot showing your recent logs, profile page and team matches based on the website http://logs.tf. You can create teams, fill them with players and get recent matches of the teams. You can also search for other persons logs and logs.tf profile's.
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/7bdca2c5c8ae4568924f7d0814364ffa)](https://app.codacy.com/app/callfeeld/logs.tf-discord-bot?utm_source=github.com&utm_medium=referral&utm_content=callFEELD/logs.tf-discord-bot&utm_campaign=Badge_Grade_Dashboard)
+
+
 [![](https://image.jimcdn.com/app/cms/image/transf/dimension=234x10000:format=png/path/s7a796ecadbf7bd45/image/i0cec09af71753cd0/version/1518475074/image.png)](https://callfeeld.jimdo.com/logs-tf-discord-bot/commands/)
 [![](https://image.jimcdn.com/app/cms/image/transf/dimension=230x10000:format=png/path/s7a796ecadbf7bd45/image/i9e494036347e1de1/version/1518475106/image.png)](https://github.com/callFEELD/logs.tf-discord-bot/wiki)
 [![](https://image.jimcdn.com/app/cms/image/transf/dimension=225x10000:format=png/path/s7a796ecadbf7bd45/image/i49fc7bd83a4ac903/version/1518475082/image.png)](https://callfeeld.jimdo.com/logs-tf-discord-bot/)
