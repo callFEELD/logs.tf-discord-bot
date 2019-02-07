@@ -1,1 +1,10 @@
-language: python3
+language: python
+python:
+  - "3.6"
+# command to install dependencies
+install:
+  - pip install discord.py
+  - pip install asyncio
+# command to run tests
+script:
+  - run
