@@ -5,13 +5,13 @@
 import discord
 
 # own imports
-from src.classes import Essentials
-from src.classes import Users
-from src.classes import Teams
+from src.classes.Essentials import LogBotEssentials, tosteamid3, totime, LogPlayerSearch, LogIDdetails, get_closest_demo, PerformanceDisplay
+from src.classes.Users import LogBotUsers
+from src.classes.Teams import LogBotTeams
 
-LBU = Users.LogBotUsers()
-LBE = Essentials.LogBotEssentials()
-LBT = Teams.LogBotTeams()
+LBU = LogBotUsers()
+LBE = LogBotEssentials()
+LBT = LogBotTeams()
 
 
 class LogBotCommands:
@@ -378,7 +378,7 @@ class LogBotCommands:
             if not team:
                 # Check if last value is an int
                 try:
-                    format = int(c_type)
+                    team_format = int(c_type)
                     # create a new team (teamname, type)
                     LBT.create_team(self.message.server.id, name, c_type, creator)
 
@@ -518,6 +518,7 @@ class LogBotCommands:
                 self.message_split) >= 3 and self.message.content.lower().endswith('profile'):
             return self.command_logs_mention_profile()
 
+
     def command_logs(self):
         # initilaize vars
         messagetosend = ":wave: Hey **{}** seems like you are new.\n" \
@@ -535,18 +536,18 @@ class LogBotCommands:
             # Then grab data of the player
             # Get the newest log of the player
             demo_link = ""
-            data = LBE.LogPlayerSearch(user["steam_id"], 1)
+            data = LogPlayerSearch(user["steam_id"], 1)
             # Getting data of the log
             if len(data["logs"]) > 0:
                 logid = str(data["logs"][0]["id"])  # Logid
                 logtitle = str(data["logs"][0]["title"])  # Title of the log
-                logtime = LBE.totime(data["logs"][0]["date"])  # date and time of the log
-                steamid3 = LBE.tosteamid3(user["steam_id"])
+                logtime = totime(data["logs"][0]["date"])  # date and time of the log
+                steamid3 = tosteamid3(user["steam_id"])
 
                 # Grabbing player performance
-                logiddetails = LBE.LogIDdetails(logid, steamid3)
-                demo = LBE.get_closest_demo(user["steam_id"], data["logs"][0]["date"])
-                performance = LBE.PerformanceDisplay(0, logiddetails)
+                logiddetails = LogIDdetails(logid, steamid3)
+                demo = get_closest_demo(user["steam_id"], data["logs"][0]["date"])
+                performance = PerformanceDisplay(0, logiddetails)
 
                 if demo is not None:
                     demo_link = "\t\tdemo [<{}>]".format(demo)
@@ -561,6 +562,7 @@ class LogBotCommands:
 
         return messagetosend
 
+
     def command_logs_profile(self):
         # vars
         messagetosend = "Sorry " + self.message.author.name + " :confused:  but i didn't find you in my data."
@@ -574,7 +576,7 @@ class LogBotCommands:
                               "*steam*\t\t\t\t[<http://steamcommunity.com/profiles/" + user["steam_id"] + ">]\n" \
                               "*SteamID64*\t  `" + user["steam_id"] + "`\n"
                 # Getting newest 3 logs
-            data = LBE.LogPlayerSearch(user["steam_id"], 3)
+            data = LogPlayerSearch(user["steam_id"], 3)
 
             # check if this is a real valid user
             if data["results"] != 0:
@@ -584,7 +586,7 @@ class LogBotCommands:
                 for log in data["logs"]:
                     logid = str(log["id"])
                     logtitle = str(log["title"])
-                    logtime = LBE.totime(log["date"])
+                    logtime = totime(log["date"])
                     messagetosend2 = messagetosend2 + "**" + logtitle + "**\t`"+ logtime \
                                      +"`\n<http://logs.tf/" + logid + ">\n\n"
 
@@ -597,6 +599,7 @@ class LogBotCommands:
 
         return messagetosend
 
+
     def command_logs_mention(self):
         # vars
         mentionuser = str(self.message.mentions[0].name)
@@ -608,20 +611,20 @@ class LogBotCommands:
         if user:
             # grabbing steam ids of the player
             steamid64 = user["steam_id"]
-            steamid3 = LBE.tosteamid3(steamid64)
+            steamid3 = tosteamid3(steamid64)
             demo_link = ""
 
             # grabbing newst log of the player
-            data = LBE.LogPlayerSearch(user["steam_id"], 1)
+            data = LogPlayerSearch(user["steam_id"], 1)
             # Getting log details
             if len(data["logs"]) > 0:
                 logid = str(data["logs"][0]["id"])  # logid
                 logtitle = str(data["logs"][0]["title"])  # log title
-                logtime = LBE.totime(data["logs"][0]["date"])  # date and time of the log
+                logtime = totime(data["logs"][0]["date"])  # date and time of the log
                 # getting player performance
-                demo = LBE.get_closest_demo(user["steam_id"], data["logs"][0]["date"])
-                logiddetails = LBE.LogIDdetails(logid, steamid3)
-                performance = LBE.PerformanceDisplay(1, logiddetails)
+                demo = get_closest_demo(user["steam_id"], data["logs"][0]["date"])
+                logiddetails = LogIDdetails(logid, steamid3)
+                performance = PerformanceDisplay(1, logiddetails)
 
                 if demo is not None:
                     demo_link = "\t\tdemo [<{}>]".format(demo)
@@ -654,7 +657,7 @@ class LogBotCommands:
                               "*SteamID64*\t  `" + user["steam_id"] + "`\n"
 
             # Getting newest 3 logs
-            data = LBE.LogPlayerSearch(user["steam_id"], 3)
+            data = LogPlayerSearch(user["steam_id"], 3)
 
             # check if this is a real valid user
             if data["results"] != 0:
@@ -664,7 +667,7 @@ class LogBotCommands:
                 for log in data["logs"]:
                     logid = str(log["id"])
                     logtitle = str(log["title"])
-                    logtime = LBE.totime(log["date"])
+                    logtime = totime(log["date"])
                     messagetosend2 = messagetosend2 + "**" + logtitle + "**\t`" + logtime \
                                      + "`\n<http://logs.tf/" + logid + ">\n\n"
 

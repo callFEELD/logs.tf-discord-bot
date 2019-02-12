@@ -12,7 +12,5 @@
 
 # Importing own Classes
 from src.classes import StartHandler
-# from src.classes import dashboard
 
-#dashboard.run()
 StartHandler.run()

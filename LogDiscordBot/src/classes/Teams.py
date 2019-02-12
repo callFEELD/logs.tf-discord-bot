@@ -3,15 +3,13 @@
 # last edit: 21.04.2018 (callFEELD)
 
 # imports
-import json
-from src.classes import database
+from src.classes.database import DB
 
 class LogBotTeams:
     # open a database connection
-    db = database.DB()
+    db = DB()
 
     #def __init__(self):
-
 
     # returns the team with the name or False
     def get_team(self, server_id, name):
@@ -36,8 +34,8 @@ class LogBotTeams:
         self.db.removePlayerOfTeam(server_id, teamname, discordid)
 
     # creates a team
-    def create_team(self, server_id, teamname, type, creator):
-        self.db.insertTeam(server_id, teamname, type, creator)
+    def create_team(self, server_id, teamname, team_format, creator):
+        self.db.insertTeam(server_id, teamname, team_format, creator)
 
     # deletes a team
     def delete_team(self, server_id, teamname):
