@@ -12,9 +12,8 @@ A discord bot showing your recent logs, profile page and team matches based on t
 
 Don't want to have a hard time installing?
 
-![](https://image.jimcdn.com/app/cms/image/transf/dimension=500x10000:format=png/path/s7a796ecadbf7bd45/image/i26e3855a94297c9f/version/1530651637/image.png)
+[![](https://image.jimcdn.com/app/cms/image/transf/dimension=500x10000:format=png/path/s7a796ecadbf7bd45/image/i26e3855a94297c9f/version/1530651637/image.png)](https://discordapp.com/oauth2/authorize?client_id=463788571040677888&scope=bot)
 
-comming soon...
 
 An official bot is under development right now. If you want to take part of beta [contact me](https://steamcommunity.com/id/callFEELD). During the beta phase be warned that the bot could be offline for troubleshooting for a few minutes. Also data can be lost during processes.
 
