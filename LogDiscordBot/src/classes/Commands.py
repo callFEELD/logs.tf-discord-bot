@@ -1,5 +1,5 @@
 # This Class handles and contain every command.
-# last edit: 21.04.2018 (callFEELD)
+# last edit: 20.02.2019 (callFEELD)
 
 # imports
 import discord
@@ -8,10 +8,14 @@ import discord
 from src.classes.Essentials import LogBotEssentials, tosteamid3, totime, LogPlayerSearch, LogIDdetails, get_closest_demo, PerformanceDisplay
 from src.classes.Users import LogBotUsers
 from src.classes.Teams import LogBotTeams
+from src.classes.Database import DB
 
-LBU = LogBotUsers()
-LBE = LogBotEssentials()
-LBT = LogBotTeams()
+from src.handler.config import config
+
+database = DB()
+LBU = LogBotUsers(database)
+LBT = LogBotTeams(database)
+LBE = LogBotEssentials(LBU)
 
 
 class LogBotCommands:
@@ -96,7 +100,9 @@ class LogBotCommands:
                   "my database.\n\n"
 
         #Message that will be sended
-        messagetosend = tip + "__**Commands**__\n\n" + modhelp+ \
+        messagetosend = tip + "__**Commands**__" \
+                        "\n:information_source:\tParts of the commands have this kind of syntax `<teamname>` or `<@name>`. Those meant to be placeholders for your own input.\n\n" \
+                        + modhelp+ \
                         "\n\n`!logs` - shows your las!t played match with details about your performance" \
                         "\n`!logs profile` - shows your logs.tf profile" \
                         "\n\n`!logs <@name>` - shows the last log of the player you looked for" \

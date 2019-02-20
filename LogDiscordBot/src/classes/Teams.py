@@ -1,15 +1,11 @@
 # This Class is there to handle actions that contain changing the database (users.json) file
 # It only handles the actions for teams
-# last edit: 21.04.2018 (callFEELD)
-
-# imports
-from src.classes.database import DB
+# last edit: 20.02.2019 (callFEELD)
 
 class LogBotTeams:
-    # open a database connection
-    db = DB()
-
-    #def __init__(self):
+    
+    def __init__(self, database):
+        self.db = database
 
     # returns the team with the name or False
     def get_team(self, server_id, name):

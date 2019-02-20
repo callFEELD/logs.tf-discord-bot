@@ -4,13 +4,12 @@
 #              persons logs and logs.tf profile's.
 #
 # creator: callFEELD
-#          Website: https://callfeeld.jimdo.com/
 #          Steam:   http://steamcommunity.com/id/callFEELD/
 #          GitHub:  https://github.com/callFEELD
 # Thank you Matthew (GitHub: https://github.com/Matthew-The-Mighty-Mouse-Madge) for the support
-# last edit: 21.04.2018 (callFEELD)
+# last edit: 20.02.2019 (callFEELD)
 
 # Importing own Classes
-from src.classes import StartHandler
+from src.handler.start_event import run
 
-StartHandler.run()
+run()

@@ -1,16 +1,14 @@
 # This Class is there to handle actions that contain changing the database (users.json) file
 # It only handles the actions for users and moderators
-
-#imports
-from src.classes import database
+# last edit: 20.02.2019 (callFEELD)
 
 class LogBotUsers:
     # CONFIG
     # The databse file containing the users, moderators and teams
-    db = database.DB()
     moderators = None
 
-    def __init__(self):
+    def __init__(self, database):
+        self.db = database
         self.loadusers()
 
     # Loads the member list as json format and converts it into an object

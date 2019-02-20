@@ -1,5 +1,5 @@
 # This Class containing important functions that will be used in other Classes
-# last edit: 21.04.2018 (callFEELD)
+# last edit: 20.02.2019 (callFEELD)
 
 # third party imports
 import urllib.request, json         # used to handle separate json files and the logs.tf api
@@ -7,13 +7,11 @@ import datetime                     # used to convert timestamps
 from collections import Counter     # used in the match searching algorithm
 
 # own imports
-from src.classes import Teams
-from src.classes import Users
+from src.handler.logger import logger
+from src.handler.config import config
 
+# Essentials functions
 
-"""
-Essentials functions
-"""
 # Converts the SteamID64 into a SteamID3 (as a string)
 def tosteamid3(steamID64):
     if len(steamID64) == 17:
@@ -30,10 +28,7 @@ def totime(timestamp):
 
 # Console output of the users id that was accessing the bot and the bots output
 def consoleOutput(userid, message, outputmessage):
-    print("[+]  [command]       " + message.content.lower())
-    print("     [author]        " + str(message.author.id))
-    print("     [output]        " + str(outputmessage.split()))
-    print("\n")
+    logger.info("[+] [command] " + message.content.lower() +", [author] " + str(message.author.id) + ", [output] " + str(outputmessage.split()))
 
 
 # Returns a Player Log.tf search, by inputting steamid64 and a log limit
@@ -155,7 +150,6 @@ def LogIDdetails(logid, steamid3):
                 
                 hpm = str(round(float(data["players"][steamid3]["heal"]) / (float(data["info"]["total_length"])/60), 2))
                 medic = {"hpm": hpm, "ubers": ubers, "drops": drops, "uber_types": uber_types}
-                print(data["players"][steamid3])
 
             #get heals percentage
             team_of_player = str(data["players"][steamid3]["team"]) #get players team
@@ -182,36 +176,35 @@ def LogIDdetails(logid, steamid3):
 
 
 class LogBotEssentials:
-    # Load the CONFIG
-    config = open("data/cfg/config.json", "r").read()
-    config = json.loads(config)
     # version number of the bot
-    version = config["version"]
+    version = config["General"]["version"]
     # nickname of the bot
-    USERNAME = config["username"]
+    USERNAME = config["Bot"]["username"]
     # Playing/Game Status
-    PLAYING_STATUS = config["playing_status"]
+    PLAYING_STATUS = config["Bot"]["playing_status"]
 
     # Minimum amount of players that a match is defined as a match
     # 6s
-    sixes_min_players = config["sixes_min_players"]
+    sixes_min_players = config["Matches"]["sixes_min_players"]
     # Highlander
-    hl_min_players = config["hl_min_players"]
+    hl_min_players = config["Matches"]["hl_min_players"]
     # 4s
-    fours_min_players = config["fours_min_players"]
+    fours_min_players = config["Matches"]["fours_min_players"]
     # Ultiduo
-    duo_min_players = config["duo_min_players"]
+    duo_min_players = config["Matches"]["duo_min_players"]
     # Amount of logs of a player that will be scanned to get a match
-    AMOUNT_OF_LOGS_SEARCHED_PER_PLAYER = config["amount_of_logs_searched_per_player"]
+    AMOUNT_OF_LOGS_SEARCHED_PER_PLAYER = config["Matches"]["amount_of_logs_searched_per_player"]
 
 
-    #Variables
-    userlist = Users.LogBotUsers().getplayers()
-    moderators = Users.LogBotUsers().getmoderators()
+    def __init__(self, logdiscorduser):
+        self.LBU = logdiscorduser
+        self.userlist = self.LBU.getplayers()
+        self.moderators = self.LBU.getmoderators()
+    
 
     def update(self):
-        self.userlist = Users.LogBotUsers().getplayers()
-        self.moderators = Users.LogBotUsers().getmoderators()
+        self.userlist = self.LBU.getplayers()
+        self.moderators = self.LBU.getmoderators()
 
 
     # find the newsest team match
@@ -227,7 +220,7 @@ class LogBotEssentials:
         checklogids = []
 
         # Steam ID64 and Steam ID3 of the author
-        user = Users.LogBotUsers().get_player(message.author.id)
+        user = self.LBU.get_player(message.author.id)
         steamid3 = tosteamid3(user["steam_id"])
 
         # Go trough all Players of the Team

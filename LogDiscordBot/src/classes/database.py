@@ -1,7 +1,11 @@
+# last edit: 20.02.2019 (callFEELD)
 import sqlite3
 
+from src.handler.logger import logger
+from src.handler.config import config
+
 class DB():
-    DATABASEDIR = "data/database.db"
+    DATABASEDIR = config["Paths"]["database"]
 
     # create the database if it does not exists
     def __init__(self):
@@ -11,40 +15,56 @@ class DB():
         try:
             self.c.execute('''CREATE TABLE servers
                                 (serverid TEXT PRIMARY KEY, region TEXT)''')
-            print("Created table: servers...")
+            logger.info("[DB] Created table: servers...")
 
             self.c.execute('''CREATE TABLE users 
                                 (discordid TEXT PRIMARY KEY, 
                                 steamid TEXT, time)''')
-            print("Created table: users...")
+            logger.info("[DB] Created table: users...")
 
             self.c.execute('''CREATE TABLE moderators 
                                 (discordid TEXT, serverid TEXT,
                                 FOREIGN KEY(discordid) REFERENCES users(discordid),
                                 FOREIGN KEY(serverid) REFERENCES servers(serverid))''')
-            print("Created table: moderators...")
+            logger.info("[DB] Created table: moderators...")
 
             self.c.execute('''CREATE TABLE teams 
                                 (name TEXT, serverid TEXT, type, creator INTEGER,
                                 FOREIGN KEY(creator) REFERENCES users(discordid),
                                 FOREIGN KEY(serverid) REFERENCES servers(serverid))''')
-            print("Created table: teams...")
+            logger.info("[DB] Created table: teams...")
 
             self.c.execute('''CREATE TABLE playersinteams 
                                 (discordid TEXT, uname TEXT, class TEXT, serverid TEXT, tname INTEGER,
                                 FOREIGN KEY(tname) REFERENCES teams(name),
                                 FOREIGN KEY(discordid) REFERENCES users(discordid),
                                 FOREIGN KEY(serverid) REFERENCES servers(serverid))''')
-            print("Created table: playersinteams...")
+            logger.info("[DB] Created table: playersinteams...")
 
         except Exception as e:
-            print(str(e))
+            logger.error(str(e))
             #pass
 
     def insertServer(self, serverid, region):
         try:
             va = tuple([serverid] + [region])
             self.c.execute('INSERT INTO servers VALUES (?,?)', va)
+            self.conn.commit()
+            return True
+        except Exception:
+            return False
+
+    def delete_server(self, serverid):
+        try:
+            # get all teams of a server
+            teams = self.findTeams(serverid)
+            for team in teams:
+                #remove them
+                self.deleteTeam(serverid, team["name"])
+
+            #then remove the server
+            va = tuple([serverid])
+            self.c.execute('DELETE FROM server WHERE (serverid = ?)', va)
             self.conn.commit()
             return True
         except Exception:
@@ -147,7 +167,6 @@ class DB():
                 for n, c, d, s in result:
                     players.append({"name": n, "class": c, "discord_id": d, "steam_id": s})
                 ret = {"name": name, "type": t_type, "creator": creator, "players": players}
-                print(ret)
                 return ret
             return False
         except Exception:
