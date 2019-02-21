@@ -10,8 +10,6 @@ from src.classes.Users import LogBotUsers
 from src.classes.Teams import LogBotTeams
 from src.classes.Database import DB
 
-from src.handler.config import config
-
 database = DB()
 LBU = LogBotUsers(database)
 LBT = LogBotTeams(database)

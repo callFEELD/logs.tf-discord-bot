@@ -41,6 +41,33 @@ async def sendMessage(message, messagetosend):
     await discord_client.send_message(message.channel, messagetosend)
     consoleOutput(message.author.id, message, messagetosend)
 
+# sends the admin a private message
+async def sendAdmin(message):
+    try:
+        admin =  await discord_client.get_user_info(config["General"]["admin"])
+        await discord_client.send_message(admin, message)
+    except Exception as e:
+        logger.error(e)
+        logger.error("Probably wrong admin id.")
+    
+
+async def update_playing_status():
+    # shows the 'playing' status
+    await discord_client.change_presence(game=discord.Game(name=PLAYING_STATUS + " | {} servers".format(len(discord_client.servers))))
+
+async def admin_stats():
+    serverlist = ""
+    for server in discord_client.servers:
+        serverlist += "**{}** `{}` from `{}` with `{}` members.\n".format(server.name, server.id, server.region, len(server.members))
+    
+    stored_users = len(DB.selectUsers())
+    message = "**Bot online and running.**\n\n" + \
+              "Running on `{}` servers.\n\n".format(len(discord_client.servers)) + \
+              "I have `{}` stored users in my database.\n\n".format(stored_users) + \
+              "Here is the server list:\n {}".format(serverlist)
+    await sendAdmin(message)
+    
+
 
 @discord_client.event
 async def on_ready():
@@ -54,16 +81,17 @@ async def on_ready():
     logger.info("Bot's [discordid] " + discord_client.user.id)
 
     # shows the 'playing' status
-    await discord_client.change_presence(game=discord.Game(name=PLAYING_STATUS))
+    await update_playing_status()
 
     # go search if every server is in the database, if not add the server
     for server in discord_client.servers:
         if not DB.findServer(server.id):
             DB.insertServer(server.id, None)
             logger.info('Added server {}, that invited the bot during offtime'.format(server.id))
+    
+    await admin_stats()
+    
 
-    print(DB.selectServers())
-    print(discord_client.servers)
 
 # If the bot gets connected to a new server
 @discord_client.event
@@ -72,6 +100,10 @@ async def on_server_join(server):
     logger.info("Bot joined a new server ({})".format(server.id))
     if DB.insertServer(server.id, None):
         logger.info("Added new server ({}) to the database".format(server.id))
+    
+    await update_playing_status()
+    
+
 
 # If the bot was removed from a server
 @discord_client.event
@@ -81,6 +113,8 @@ async def on_server_remove(server):
         logger.info("Removed the server ({}) from the database".format(server.id))
     else:
         logger.error("Could not remove the server ({}) from the database".format(server.id))
+    
+    await update_playing_status()
 
 
 def run():
@@ -108,6 +142,7 @@ def run():
     # connecting the bot to the discord servers
     try:
         discord_client.run(TOKEN)
-    except:
+    except Exception as e:
         logger.error('Critical Error! Maybe wrong Token!')
+        logger.error(e)
         return
