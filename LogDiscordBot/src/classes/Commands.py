@@ -8,7 +8,7 @@ import discord
 from src.classes.Essentials import LogBotEssentials, tosteamid3, totime, LogPlayerSearch, LogIDdetails, get_closest_demo, PerformanceDisplay
 from src.classes.Users import LogBotUsers
 from src.classes.Teams import LogBotTeams
-from src.classes.database import DB
+from src.classes.Database import DB
 
 database = DB()
 LBU = LogBotUsers(database)
