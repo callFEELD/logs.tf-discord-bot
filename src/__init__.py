@@ -127,7 +127,7 @@ async def get_parsed_log_details(logid, steamid3):
             drops = str(data["players"][steamid3]["drops"])
             uber_types = ""
             k = 0
-            for uber in data["players"][steamid3]["ubertypes"]:
+            for _ in data["players"][steamid3]["ubertypes"]:
                 uber_types = uber_types + list(data["players"][steamid3]["ubertypes"].keys())[k] + ": " + str(list(data["players"][steamid3]["ubertypes"].values())[k]) + "\t"
                 k += 1
 

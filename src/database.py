@@ -17,28 +17,34 @@ async def init_db():
                             (serverid TEXT PRIMARY KEY, region TEXT)''')
         logging.info("[DB] Created table: servers...")
 
-        await database.execute('''CREATE TABLE users 
-                            (discordid TEXT PRIMARY KEY, 
-                            steamid TEXT, time)''')
+        await database.execute(
+            "CREATE TABLE users "
+            "(discordid TEXT PRIMARY KEY, steamid TEXT, time)"
+        )
         logging.info("[DB] Created table: users...")
 
-        await database.execute('''CREATE TABLE moderators 
-                            (discordid TEXT, serverid TEXT,
-                            FOREIGN KEY(discordid) REFERENCES users(discordid),
-                            FOREIGN KEY(serverid) REFERENCES servers(serverid))''')
+        await database.execute(
+            "CREATE TABLE moderators "
+            "(discordid TEXT, serverid TEXT, FOREIGN KEY(discordid)"
+            "REFERENCES users(discordid),"
+            "FOREIGN KEY(serverid) REFERENCES servers(serverid))")
         logging.info("[DB] Created table: moderators...")
 
-        await database.execute('''CREATE TABLE teams 
-                            (name TEXT, serverid TEXT, type, creator INTEGER,
-                            FOREIGN KEY(creator) REFERENCES users(discordid),
-                            FOREIGN KEY(serverid) REFERENCES servers(serverid))''')
+        await database.execute(
+            "CREATE TABLE teams"
+            "(name TEXT, serverid TEXT, type, creator INTEGER,"
+            "FOREIGN KEY(creator) REFERENCES users(discordid),"
+            "FOREIGN KEY(serverid) REFERENCES servers(serverid))"
+        )
         logging.info("[DB] Created table: teams...")
 
-        await database.execute('''CREATE TABLE playersinteams 
-                            (discordid TEXT, uname TEXT, class TEXT, serverid TEXT, tname INTEGER,
-                            FOREIGN KEY(tname) REFERENCES teams(name),
-                            FOREIGN KEY(discordid) REFERENCES users(discordid),
-                            FOREIGN KEY(serverid) REFERENCES servers(serverid))''')
+        await database.execute(
+            "CREATE TABLE playersinteams "
+            "(discordid TEXT, uname TEXT, class TEXT, serverid TEXT,"
+            "tname INTEGER, FOREIGN KEY(tname) REFERENCES teams(name),"
+            "FOREIGN KEY(discordid) REFERENCES users(discordid),"
+            "FOREIGN KEY(serverid) REFERENCES servers(serverid))"
+        )
         logging.info("[DB] Created table: playersinteams...")
 
     except Exception as e:
@@ -105,7 +111,7 @@ async def findUser(discordid):
         result = await database.fetch_all('SELECT * FROM users WHERE discordid=:discordid', va)
         if len(result) > 0:
             ret = {}
-            for d, s, t in result:
+            for d, s, _ in result:
                 ret.update({"discord_id": d, "steam_id": s})
             return ret
         return False
