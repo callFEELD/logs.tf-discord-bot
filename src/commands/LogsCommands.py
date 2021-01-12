@@ -1,15 +1,23 @@
-from src.commands import Command, Placeholder, ActivatorType, CommandActivator
+from src.commands import Command, Placeholder, ActivatorType, CommandActivator, CommandPriority
 from src import tosteamid3, totime, get_logs, get_parsed_log_details, \
                 get_closest_demo, PerformanceDisplay
 import src.users as LDBU
 
 
-class LogsStatsCommand(Command):
-    activator = CommandActivator(ActivatorType.equals, '!logs')
+class LogsCommand(Command):
+    activator = CommandActivator(ActivatorType.starts_with, '!logs')
+    priority = CommandPriority.lowest
 
     async def logic(self, message):
-        # checks if author is registerd in the user file
-        user = await LDBU.get_player(message.author.id)
+        # check if a user is mentioned, then query the mentioned user and
+        # not the author
+        author_query = False
+        if len(message.mentions) > 0:
+            user = await LDBU.get_player(message.mentions[0].id)
+        else:
+            # checks if author is registerd in the user file
+            user = await LDBU.get_player(message.author.id)
+            author_query = True
         if user:
             # Then grab data of the player
             # Get the newest log of the player+
@@ -45,25 +53,40 @@ class LogsStatsCommand(Command):
                     }
             else:
                 return \
-                    ":warning:\tLooks like there a no logs.\n\t\t   Maybe this steamid does not exits, " \
-                    "it can be changed by typing `!logs addme <steamid>`", None
-        return \
-            f":wave: Hey **{Placeholder.author_name}** seems like you are new.\n" \
-            "With your Steam information I can offer you details such as your current logs.\n" \
-            "You can create teams, fill them with players and get recent matches of the teams.\n" \
-            "You can also search for other persons logs and logs.tf profile's.\n\n" \
-            "In two steps you can use them:\n" \
-            "\t\t\t1. Go to <https://steamid.xyz/> and find your *SteamID64*\n" \
-            "\t\t\t2. write `!logs addme ` and then your SteamID64. Example:`!logs addme 76561198041007223`", \
-            None
+                    ":warning:\tLooks like there a no logs.\n\t\t   Maybe the users steamid does not exits, " \
+                    "it can be changed by the user itself with: `!logs addme <steamid>`", None
+
+        if author_query:
+            return \
+                f":wave: Hey **{Placeholder.author_name}** seems like you are new.\n" \
+                "With your Steam information I can offer you details such as your current logs.\n" \
+                "You can create teams, fill them with players and get recent matches of the teams.\n" \
+                "You can also search for other persons logs and logs.tf profile's.\n\n" \
+                "In two steps you can use them:\n" \
+                "\t\t\t1. Go to <https://steamid.xyz/> and find your *SteamID64*\n" \
+                "\t\t\t2. write `!logs addme ` and then your SteamID64. Example:`!logs addme 76561198041007223`", \
+                None
+        else:
+            return f"Sorry {Placeholder.author_name} :confused:  but i didn't find " \
+                   f"**{message.mentions[0].name}** in my data.", None
 
 
 class LogsProfile(Command):
-    activator = CommandActivator(ActivatorType.equals, '!logs profile')
+    activator = CommandActivator(ActivatorType.starts_with, '!logs profile')
 
     async def logic(self, message):
-        # check if user is in userdata
-        user = await LDBU.get_player(message.author.id)
+        # check if a user is mentioned, then query the mentioned user and
+        # not the author
+        author_query = False
+        if len(message.mentions) > 0:
+            user = await LDBU.get_player(message.mentions[0].id)
+            name = message.mentions[0].name
+        else:
+            # check if user is in userdata
+            user = await LDBU.get_player(message.author.id)
+            name = message.author.name
+            author_query = True
+
         if user:
             # Getting newest 3 logs
             data = await get_logs(user["steam_id"], 3)
@@ -80,7 +103,7 @@ class LogsProfile(Command):
                         f"<http://logs.tf/{log['id']}>\n\n"
 
             return \
-                f":card_box:\t**{Placeholder.author_name}'s profile**\n\n" \
+                f":card_box:\t**{name}'s profile**\n\n" \
                 f"*logs.tf*\t\t\t\t[<http://logs.tf/profile/{Placeholder.data('steam_id')}>]\n" \
                 f"*demos.tf*\t\t   [<http://demos.tf/profiles/{Placeholder.data('steam_id')}>]\n" \
                 f"*steam*\t\t\t\t[<http://steamcommunity.com/profiles/{Placeholder.data('steam_id')}>]\n" \
@@ -91,6 +114,11 @@ class LogsProfile(Command):
                     "last_3_logs": last_3_logs
                 }
 
-        return \
-            f"Sorry {Placeholder.author_name} :confused:  "\
-            "but i didn't find you in my data."
+        if author_query:
+            return \
+                f"Sorry {Placeholder.author_name} :confused:  "\
+                "but i didn't find you in my data.", None
+        else:
+            return \
+                f"Sorry {Placeholder.author_name} :confused:  "\
+                f"but i didn't find {name} in my data.", None
