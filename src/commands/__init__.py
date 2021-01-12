@@ -1,6 +1,12 @@
 import discord.message
 
 
+class CommandPriority:
+    lowest = 100
+    medium = 50
+    highest = 1
+
+
 class ActivatorType:
     equals = 0
     starts_with = 1
@@ -71,6 +77,7 @@ class Renderer:
 
 class Command:
     activator: CommandActivator = None
+    priority = CommandPriority.medium
 
     async def logic(self, message: discord.Message):
         pass

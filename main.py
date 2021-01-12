@@ -1,6 +1,7 @@
 import discord
 import logging
 import time
+import operator
 from src.config import VERSION, PLAYING_STATUS, ADMIN_USER, TOKEN
 import src.database as DB
 
@@ -90,6 +91,7 @@ class LogsDiscordBot(discord.Client):
             if cmd.activator.check(message):
                 start = time.time()
                 await cmd.handle(message)
+                break
                 print(time.time() - start)
 
 
@@ -102,6 +104,9 @@ print("Initializing commands...")
 commands = []
 for cmd in cmds:
     commands.append(cmd())
+
+commands.sort(key=operator.attrgetter('priority'))
+print(commands)
 print("Initializing commands [complete]")
 
 client.set_commands(commands)
