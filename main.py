@@ -7,6 +7,7 @@ import src.database as DB
 
 from src.commands.BasicCommands import *
 from src.commands.LogsCommands import *
+from src.commands.TeamCommands import *
 from src.commands import Command
 
 
@@ -91,8 +92,8 @@ class LogsDiscordBot(discord.Client):
             if cmd.activator.check(message):
                 start = time.time()
                 await cmd.handle(message)
-                break
                 print(time.time() - start)
+                break
 
 
 client = LogsDiscordBot()

@@ -3,6 +3,7 @@ import discord.message
 
 class CommandPriority:
     lowest = 100
+    medium_low = 75
     medium = 50
     highest = 1
 

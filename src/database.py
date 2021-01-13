@@ -165,30 +165,43 @@ async def findTeams(server_id):
         return False
 
 
-def findTeam(server_id, name):
-    try:
-        va = tuple([server_id] + [name])
-        database.execute('SELECT name, type, creator FROM teams WHERE serverid=? AND name=?', va)
-        result = database.fetchone()
-        if len(result) > 0:
-            name, t_type, creator = result
-            database.execute('SELECT playersinteams.uname, playersinteams.class, users.discordid, users.steamid FROM playersinteams INNER JOIN users \
-                            on playersinteams.discordid = users.discordid WHERE serverid=? AND tname=?', va)
-            result = database.fetchall()
-            players = []
-            for n, c, d, s in result:
-                players.append({"name": n, "class": c, "discord_id": d, "steam_id": s})
-            ret = {"name": name, "type": t_type, "creator": creator, "players": players}
-            return ret
-        return False
-    except Exception:
-        return False
+async def findTeam(server_id, name):
+    va = {"server_id": server_id, "name": name}
+    result = await database.fetch_one(
+        "SELECT name, type, creator FROM teams WHERE serverid=:server_id AND name=:name", 
+        va
+    )
+    if result is not None and len(result) > 0:
+        name, t_type, creator = result
+        result = await database.fetch_all(
+            "SELECT playersinteams.uname, playersinteams.class, users.discordid, users.steamid FROM playersinteams INNER JOIN users \
+            on playersinteams.discordid = users.discordid WHERE serverid=:server_id AND tname=:name", va
+        )
+        players = []
+        for n, c, d, s in result:
+            players.append({
+                "name": n,
+                "class": c,
+                "discord_id": d,
+                "steam_id": s
+            })
+        ret = {
+            "name": name,
+            "type": t_type,
+            "creator": creator,
+            "players": players
+        }
+        return ret
 
 
-def insertTeam(server_id , name, t_type, creator_did):
-    va = tuple([name] + [server_id] + [t_type] + [creator_did])
-    database.execute('INSERT INTO teams VALUES (?,?,?,?)', va)
-    database.commit()
+async def insertTeam(server_id , name, t_type, creator_did):
+    va = {
+        "name": name,
+        "server_id": server_id,
+        "t_type": t_type,
+        "creator_did": creator_did
+    }
+    await database.execute('INSERT INTO teams VALUES (:name, :server_id, :t_type, :creator_did)', va)
 
 
 def insertPlayerToTeam(server_id, teamname, discordid, playername, class_type):
