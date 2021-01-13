@@ -168,7 +168,7 @@ async def findTeams(server_id):
 async def findTeam(server_id, name):
     va = {"server_id": server_id, "name": name}
     result = await database.fetch_one(
-        "SELECT name, type, creator FROM teams WHERE serverid=:server_id AND name=:name", 
+        "SELECT name, type, creator FROM teams WHERE serverid=:server_id AND name=:name",
         va
     )
     if result is not None and len(result) > 0:

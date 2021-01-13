@@ -1,6 +1,4 @@
-from src.commands import Command, Placeholder, ActivatorType, CommandActivator, CommandPriority
-from src import tosteamid3, totime, get_logs, get_parsed_log_details, \
-                get_closest_demo, PerformanceDisplay
+from src.commands import Command, ActivatorType, CommandActivator, CommandPriority
 import src.teams as LDBT
 
 
@@ -71,7 +69,7 @@ class TeamsCreate(Command):
             if team is None:
                 # Check if last value is an int
                 try:
-                    team_format = int(c_type)
+                    _ = int(c_type)
                     # create a new team (teamname, type)
                     await LDBT.create_team(
                         message.guild.id, name, c_type, creator
