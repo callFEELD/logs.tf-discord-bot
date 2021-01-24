@@ -1,6 +1,7 @@
 from src.commands import Command, ActivatorType, CommandActivator, CommandPriority
 import src.teams as LDBT
 import src.users as LDBU
+from src import findMatch
 
 
 class Teams(Command):
@@ -132,6 +133,14 @@ class TeamsDelete(Command):
 
 
 class TeamsAddPlayer(Command):
+    """
+    This command adds a user into a team.
+
+    Example:
+        !logs teams add @callFEELD <teamname>
+    Result:
+        @callFEELD is now part of the team called <teamname>
+    """
     activator = CommandActivator(
         ActivatorType.starts_with, '!logs teams add'
     )
@@ -142,69 +151,62 @@ class TeamsAddPlayer(Command):
         # check if he only typed: !logs teams add
         if message.content.lower() == '!logs teams add':
             return ":bulb:\tYou can add or update a player to/of a team by typing " \
-                    "`!logs teams add <teamname> <@player> <Name>`", None
+                    "`!logs teams add <@player> <teamname>`", None
 
-        # check if 4th position is not a team
-        team = await LDBT.get_team(message.guild.id, split_msg[3])
-        if team:
-            if len(split_msg) == 4:
-                return ":bulb:\tYou have to mention the player, add his name and "\
-                        f"his class after your command\t\t`{message.content.lower()}" \
-                        " <@player> <Name> <class>`", None
-            elif len(split_msg) == 5:
-                return ":bulb:\tAdd the players name and his class after your " \
-                       f"command\t\t`{message.content.lower()} <Name> <class>`", None
-            elif len(split_msg) == 6:
-                return ":bulb:\tAdd his class after your command\t\t`" \
-                       f"{message.content.lower()} <class>`", None
-            elif len(split_msg) >= 7 and len(message.mentions) > 0:
-                # check if user that should be added is in userdata
-                user_to_add = await LDBU.get_player(message.mentions[0].id)
-                if user_to_add:
-                    if str(message.author.id) == str(team["creator"]):
-                        # check if mention player is already in the team
-                        team_players = []
-                        for player in team["players"]:
-                            team_players.append(player["discord_id"])
-                        if str(user_to_add["discord_id"]) in team_players:
-                            addorupdate = "updated"
-                            # adding player with to team: serverid, teamname,
-                            # playerdiscordid, playername, playerclass
-                            await LDBT.update_teamroster(
-                                message.guild.id,
-                                team["name"],
-                                user_to_add["discord_id"],
-                                split_msg[5],
-                                split_msg[6]
-                            )
-                        else:
-                            addorupdate = "increased"
-                            # adding player with to team: serverid, teamname,
-                            # playerdiscordid, playername, playerclass
-                            await LDBT.add_teamroster(
-                                message.guild.id,
-                                team["name"],
-                                user_to_add["discord_id"],
-                                split_msg[5],
-                                split_msg[6]
-                            )
-
-                        return f":sparkles::busts_in_silhouette:\tThe team {team['name']}" \
-                               f" has {addorupdate} their roster** {message.mentions[0].name}**" \
-                               f"- class: {split_msg[6]}", None
-                    else:
-                        return \
-                            ":warning:\tYou are not the creator of the team.", None
-                else:
-                    return f":warning: \t {message.mentions[0].name}" \
-                           f" isn't stored in my data. First <@{message.mentions[0].id}" \
-                            "> has to add himself with the command:\t\t" \
-                            "`!logs addme <SteamID64>`", None
-        else:
+        team = await LDBT.get_team(message.guild.id, split_msg[4])
+        if team is None:
             return ":warning:\tThis team does not exist.", None
+
+        # check if the message author is not the team creator
+        if str(message.author.id) != str(team["creator"]):
+            return ":warning:\tYou are not the creator of the team.", None
+
+        # check if a user is mention, to be added
+        if len(message.mentions) <= 0:
+            return ":bulb:\tYou need to mention the user you want to add to the team." \
+                   "Example: `!logs teams add @callFEELD <teamname>`", None
+
+        # check if user that should be added is in userdata
+        # is stored
+        user_to_add = await LDBU.get_player(message.mentions[0].id)
+        if user_to_add is None:
+            return f":warning:\tI don't have any data of this user.\n" \
+                   f"First <@{message.mentions[0].id}> has to add himself" \
+                   "with the command: `!logs addme <SteamID64>`", None
+
+        # check if the user is already in the team
+        team_players = []
+        for player in team["players"]:
+            team_players.append(player["discord_id"])
+
+        if str(user_to_add["discord_id"]) in team_players:
+            return ":zzz: Nothing to do, the user is already " \
+                    "part of the team.", None
+
+        # adding player with to team: serverid, teamname,
+        # playerdiscordid, playername, playerclass
+        await LDBT.add_teamroster(
+            message.guild.id,
+            team["name"],
+            user_to_add["discord_id"],
+            None,
+            None
+        )
+
+        return f":sparkles::busts_in_silhouette:\tThe team **{team['name']}**" \
+               f" has added **{message.mentions[0].name}** to their " \
+               "roster", None
 
 
 class TeamsRemovePlayer(Command):
+    """
+    This command removes a user from a team.
+
+    Example:
+        !logs teams remove @callFEELD <teamname>
+    Result:
+        @callFEELD is now no longer part of the team called <teamname>
+    """
     activator = CommandActivator(
         ActivatorType.starts_with, '!logs teams remove'
     )
@@ -213,39 +215,78 @@ class TeamsRemovePlayer(Command):
         split_msg = message.content.lower().split(" ")
 
         if message.content.lower() == '!logs teams remove':
-            return  ":incoming_envelope:\tYou can remove a player of a team by typing\t\t" \
-                    "`!logs teams remove` <teamname> <@player>", None
-        elif len(split_msg) > 3:
-            # else find the team name and if the team exists
-            team = await LDBT.get_team(message.guild.id, split_msg[3])
-            if team:
-                if len(split_msg) == 4:
-                    return ":bulb:\tAdd the player after your command\t\t`" \
-                           f"{message.content.lower()}  <@player>`", None
-                elif len(message.mentions) == 1 and len(split_msg) >= 5:
-                    if str(message.author.id) == str(team["creator"]):
-                        # check if mentioned player is already in user data
-                        user_to_remove = await LDBU.get_player(
-                            message.mentions[0].id
-                        )
-                        if user_to_remove:
-                            team_players = []
-                            for player in team["players"]:
-                                team_players.append(player["discord_id"])
-                            if user_to_remove["discord_id"] in team_players:
-                                # removing player (teamname, discordid)
-                                await LDBT.remove_teamroster(
-                                    message.guild.id,
-                                    team["name"],
-                                    user_to_remove["discord_id"]
-                                )
-                                return ":new_moon_with_face:\t Successfully removed user **" \
-                                       f"{message.mentions[0].name}** from the team: {split_msg[3]}", None
-                            else:
-                                return ":warning:\tThis player is not on your team.", None
-                        else:
-                            return f":warning:\t{message.mentions[0].name} isn't stored in my data.", None
-                    else:
-                        return ":warning:\tYou are not the creator of the team.", None
-            else:
-                return ":warning:\tThis team does not exist", None
+            return ":bulb:\tYou can remove a player of a team by typing\t\t" \
+                   "`!logs teams remove` <teamname> <@player>", None
+
+        # find the team name and if the team exists
+        team = await LDBT.get_team(message.guild.id, split_msg[4])
+
+        if team is None:
+            return ":warning:\tThis team does not exist", None
+
+        # check if the user is the team creator
+        if str(message.author.id) != str(team["creator"]):
+            return ":warning:\tYou are not the creator of the team.", None
+
+        if len(message.mentions) == 0:
+            return ":bulb:\tYou need to mention the user, you want to remove.\n" \
+                   "Example: `!logs teams remove @callFEELD <teamname>`"
+        # check if mentioned player is already in user data
+        user_to_remove = await LDBU.get_player(
+            message.mentions[0].id
+        )
+
+        if user_to_remove is None:
+            return f":warning:\t{message.mentions[0].name} isn't stored in my data.", None
+
+        # check if the user is part of the team
+        team_players = []
+        for player in team["players"]:
+            team_players.append(player["discord_id"])
+
+        if user_to_remove["discord_id"] in team_players:
+            await LDBT.remove_teamroster(
+                message.guild.id,
+                team["name"],
+                user_to_remove["discord_id"]
+            )
+            return f":sparkles:\t Successfully removed user **{message.mentions[0].name}**" \
+                   " from the team: **{split_msg[4]}**", None
+        else:
+            return ":warning:\tThis player is not on your team.", None
+
+
+class TeamsMatch(Command):
+    """
+    This command shows the logs of a team.
+
+    Example:
+        !logs match <teamname>
+    Result:
+        Logs.tf log with all players inside the team.
+    """
+    activator = CommandActivator(
+        ActivatorType.starts_with, '!logs match'
+    )
+
+    async def logic(self, message):
+        split_msg = message.content.lower().split(" ")
+
+        if message.content.lower() == '!logs match':
+            return ":bulb:\tYou can search for a match of a team. Append the teamname " \
+                   " after the command\t\t`!logs match <teamname>`\n" \
+                   "\t\t  `!logs teams` shows you the teams that are available.", None
+
+        team = await LDBT.get_team(message.guild.id, split_msg[2])
+
+        if team is None:
+            return ":warning:\tThis team does not exist. Check available teams" \
+                   " with\t\t`!logs teams`", None
+
+        if len(team["players"]) == 0:
+            return \
+                ":warning:\tThis team has no players. Please add at least one first.", None
+
+        # Search for the newest match of the team
+        msg = await findMatch(message, team)
+        return msg, None

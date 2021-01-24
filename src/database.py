@@ -112,10 +112,8 @@ async def findUser(discordid):
             for d, s, _ in result:
                 ret.update({"discord_id": d, "steam_id": s})
             return ret
-        return False
     except Exception as e:
         logging.error(e)
-        return False
 
 
 async def selectModerators():

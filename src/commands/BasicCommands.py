@@ -73,9 +73,9 @@ class TeamHelp(Command):
             "\n\n`!logs teams create <teamname> <format>` - Creates a new team. Format is the type of " \
             "the team (6 = 6v6, 9 = Highlander, 4 = 4v4 and so on)." \
             "\n`!logs teams delete <teamname>` - Removes a team from the system." \
-            "\n\n`!logs teams add <teamname> <@name> <name> <class>` - Stores a player with a specific name " \
+            "\n\n`!logs teams add <@name> <teamname>` - Stores a player with a specific name " \
             "into a team." \
-            "\n`!logs teams remove <teamname> <@name>` - Removes a player from a team." \
+            "\n`!logs teams remove <@name> <teamname>` - Removes a player from a team." \
             f"\n\n`version: {VERSION}`", None
 
 

@@ -19,6 +19,12 @@ class LogsCommand(Command):
             user = await LDBU.get_player(message.author.id)
             author_query = True
         if user:
+            map_key = message.content.strip().lower().split("on")
+            if len(map_key) > 1:
+                map_name = map_key[1]
+                msg = await self.logs_maps(user, map_name)
+                return msg, None
+
             # Then grab data of the player
             # Get the newest log of the player+
             demo_link = None
@@ -69,6 +75,20 @@ class LogsCommand(Command):
         else:
             return f"Sorry {Placeholder.author_name} :confused:  but i didn't find " \
                    f"**{message.mentions[0].name}** in my data.", None
+
+    async def logs_maps(self, user, map_name):
+        data = await get_logs(
+            user["steam_id"],
+            limit=5,
+            map_name=map_name
+        )
+        msg = "Here is a list a logs I could find:\n\n"
+        for log in data["logs"]:
+            msg += f"**{log['title']}** \n`{totime(log['date'])}` on `{log['map']}`\n" \
+                   f"<https://logs.tf/{log['id']}>\n\n"
+
+        return msg
+
 
 
 class LogsProfile(Command):
