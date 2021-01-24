@@ -27,12 +27,18 @@ def totime(timestamp: int) -> str:
     return datetime.fromtimestamp(timestamp).strftime('%d-%m-%Y %H:%M:%S %z')
 
 
-async def get_logs(steamid64: int, limit: int) -> dict:
+async def get_logs(steamid64, limit=1, map_name=None) -> dict:
     """
     Fetches the logs.tf api, to search for the logs of the steamid64
     :returns: JSON details of the log
     """
+    if isinstance(steamid64, list):
+        steamid64 = ",".join(steamid64)
+
     url = f"https://logs.tf/api/v1/log?player={steamid64}&limit={limit}"
+    if map_name is not None:
+        url += f"&map={map_name}"
+
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
             return await response.json()
@@ -173,40 +179,26 @@ async def get_parsed_log_details(logid, steamid3):
 
 
 # find the newsest team match
-async def findMatch(minplayers, numoflogs, game_format, team, message):
+async def findMatch(message, team):
     # minplayers: minimal amount of players to be a match
     # numoflogs: amount of logs that should be checked for each player
     # fomrat: either 6 or 9 to represent 6s or HL
-    checklogs = {}
-    checklogstitle = {}
-    checklogids = []
 
     # Steam ID64 and Steam ID3 of the author
     user = await LDBU.get_player(message.author.id)
     steamid3 = tosteamid3(user["steam_id"])
 
     # Go trough all Players of the Team
-    for player in team:
-        data = await get_logs(player["steam_id"], str(numoflogs))
-        logids = data["logs"]
+    steamids = []
+    for player in team["players"]:
+        steamids.append(player["steam_id"])
 
-        for logid in logids:
-            checklogs.update({logid["id"]: logid["date"]})
-            checklogstitle.update({logid["id"]: logid["title"]})
-            checklogids.append(logid["id"])
+    logs = await get_logs(steamids)
 
-    sortedlogidsbyamount = Counter(checklogids)
-    sortedlogsbytime = sorted(checklogs.keys(), reverse=True)
+    if len(logs["logs"]) > 0:
+        logdetails = await get_parsed_log_details(logs["logs"][0]["id"], steamid3)
+        performance = PerformanceDisplay(0, logdetails)
 
-    # Get the log with the most amount and the highest time
-    for i in sortedlogsbytime:
-        # if log is above minplayers and not higher than 9
-        if (sortedlogidsbyamount[i] >= minplayers and sortedlogidsbyamount[i] <= int(game_format)):
-            matchid = i
-            logtime = totime(checklogs[matchid])
-
-            logdetails = await get_parsed_log_details(matchid, steamid3)
-            performance = PerformanceDisplay(0, logdetails)
-
-            return f":trophy: match found\n**{checklogstitle[matchid]}**\n" \
-                   f"{logtime}\n\n<http://logs.tf/{matchid}> {performance}"
+        return f":trophy: match found\n**{logs['logs'][0]['title']}**\n" \
+               f"{totime(logs['logs'][0]['date'])}\n\n" \
+               f"<http://logs.tf/{logs['logs'][0]['id']}>\n\n{performance}"
