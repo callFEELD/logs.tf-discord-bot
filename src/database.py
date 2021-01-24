@@ -55,7 +55,6 @@ async def insertServer(serverid, region):
     try:
         va = {"server_id": serverid, "region": region}
         await database.execute('INSERT INTO servers VALUES (:server_id, :region)', va)
-        await database.commit()
         return True
     except Exception:
         return False
@@ -72,7 +71,6 @@ async def delete_server(serverid):
         #then remove the server
         va = {"server_id": serverid}
         await database.execute('DELETE FROM server WHERE (serverid = :server_id)', va)
-        await database.commit()
         return True
     except Exception:
         return False
@@ -132,20 +130,17 @@ async def selectModerators():
 async def insertUser(discordid, steamid):
     va = {"discordid": discordid, "steamid": steamid}
     await database.execute('INSERT INTO users VALUES (:discordid, :steamid, null)', va)
-    database.commit()
 
 
 async def updateUser(discordid, steamid):
     va = {"steamid": steamid, "discordid": discordid}
     await database.execute('UPDATE users SET steamid=:steamid WHERE discordid=:discordid', va)
-    await database.commit()
 
 
 async def deleteUser(discordid):
     try:
         va = {"discordid": discordid}
         await database.execute('DELETE FROM users users WHERE (discordid == :discordid)', va)
-        await database.commit()
         return True
     except Exception:
         return False
@@ -204,29 +199,41 @@ async def insertTeam(server_id , name, t_type, creator_did):
     await database.execute('INSERT INTO teams VALUES (:name, :server_id, :t_type, :creator_did)', va)
 
 
-def insertPlayerToTeam(server_id, teamname, discordid, playername, class_type):
-    va = tuple([discordid] + [playername] + [class_type] + [server_id] + [teamname])
-    database.execute('INSERT INTO playersinteams VALUES (?,?,?,?, ?)', va)
-    database.commit()
+async def insertPlayerToTeam(server_id, teamname, discordid, playername, class_type):
+    va = {
+        "discordid": discordid,
+        "playername": playername,
+        "class_type": class_type,
+        "server_id": server_id,
+        "teamname": teamname
+    }
+    await database.execute('INSERT INTO playersinteams VALUES (:discordid, :playername, :class_type, :server_id, :teamname)', va)
 
 
-def updatePlayerToTeam(server_id, teamname, discordid, playername, class_type):
-    va = tuple([playername] + [class_type] + [discordid] + [server_id] + [teamname])
-    database.execute('UPDATE playersinteams SET uname=?, class=? WHERE discordid=? and serverid=? and tname=?', va)
-    database.commit()
+async def updatePlayerToTeam(server_id, teamname, discordid, playername, class_type):
+    va = {
+        "discordid": discordid,
+        "playername": playername,
+        "class_type": class_type,
+        "server_id": server_id,
+        "teamname": teamname
+    }
+    await database.execute('UPDATE playersinteams SET uname=:playername, class=:class_type WHERE discordid=:discordid and serverid=:server_id and tname=:teamname', va)
 
 
-def removePlayerOfTeam(server_id, teamname, discordid):
-    va = tuple([server_id] + [teamname] + [discordid])
-    database.execute('DELETE FROM playersinteams WHERE serverid=? AND tname=? AND discordid=?', va)
-    database.commit()
+async def removePlayerOfTeam(server_id, teamname, discordid):
+    va = {
+        "server_id": server_id,
+        "teamname": teamname,
+        "discordid": discordid
+    }
+    await database.execute('DELETE FROM playersinteams WHERE serverid=:server_id AND tname=:teamname AND discordid=:discordid', va)
 
 
 async def deleteTeam(server_id, name):
     try:
         va = {"server_id": server_id, "name": name}
         await database.execute('DELETE FROM teams WHERE serverid=:server_id AND name=:name', va)
-        await database.commit()
         return True
     except Exception:
         return False
